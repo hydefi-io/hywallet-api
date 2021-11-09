@@ -1,0 +1,4860 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "Singapore e-wallet service",
+      "url": "https://api.hydefi.io/merchant"
+    },
+    {
+      "description": "Singapore Sandbox for testing",
+      "url": "https://sandbox.hydefi.io/merchant"
+    }
+  ],
+  "info": {
+    "description": "Welcome to Hydefi's API documentation. You can find information on our API endpoint.\n\n# Authentication\n\n<!-- ReDoc-Inject: <security-definitions> -->",
+    "version": "1",
+    "title": "Hydefi API",
+    "contact": {
+      "name": "Contact us through our help desk",
+      "url": "https://hydefi.io/support"
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Hydefi",
+    "url": "https://www.hydefi.com"
+  },
+  "x-tagGroups": [
+    {
+      "name": "User Management",
+      "tags": [
+        "Registration",
+        "User Account",
+        "Bank Account"
+      ]
+    },
+    {
+      "name": "Payments",
+      "tags": [
+        "Charge",
+        "Payout",
+        "Withdraw",
+        "Intents",
+        "Direct Bank Transfer Payments"
+      ]
+    },
+    {
+      "name": "Appendix",
+      "tags": [
+        "Testing",
+        "Error Response",
+        "Pagination",
+        "Callback Configuration",
+        "Try it out with Postman"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Registration",
+      "description": "Register and verify new users."
+    },
+    {
+      "name": "User Account",
+      "description": "Manage User and Accounts"
+    },
+    {
+      "name": "Charge",
+      "description": "API for Charges"
+    },
+    {
+      "name": "Credit Card (Coming Soon)",
+      "description": "Web SDK for Singapore Credit card\r\n\r\nhttps://github.com/Hydefi/Hydefi-sdk/wiki/%5BWeb-Integration%5D-Hydefi-Components#5-startcreditcardflow",
+      "x-traitTag": true
+    },
+    {
+      "name": "Payout",
+      "description": "API for Payout"
+    },
+    {
+      "name": "Direct Bank Transfer Payments (Coming Soon)",
+      "description": "API for Direct Bank Transfer Payments"
+    },
+    {
+      "name": "Bank Account",
+      "description": "API to manage Bank Account"
+    },
+    {
+      "name": "Withdraw",
+      "description": "API for Withdrawal"
+    },
+    {
+      "name": "Intents",
+      "description": "**For user case 1:**\r\n\r\nWhen a user is performing a top-up via  [GET /transfer_info](http://docs.Hydefi.io/#get-transfer-info), they might forget to enter their contact number which is needed for our system to identify them."
+    },
+    {
+      "name": "Error Response",
+      "description": "The API categorises the various failures with Hydefi's own error code. The body of the response will be JSON in the following format:\r\n```\r\nerror: \"string\"\r\nerror_code: \"string\"\r\nerror_handling: \"string\"\r\n```\r\nThe field `error` returns the error message that is specific to your request, `error_code` returns the category the error and `error_handling` returns the instruction on how to resolve the error.",
+      "x-traitTag": true
+    },
+    {
+      "name": "Pagination",
+      "description": "To do pagination:\r\n\r\n1.  Decide on number of entries per page (e.g. 100 for this example). Set the limit as this\r\n2.  First page: Offset 0. The latest 100 entries, 1-100, will be returned.\r\n3.  Second page: Offset 100. The next 100 entries, 101-200, will be returned.\r\n4.  Third page: Offset 200. The next 100 entries, 201-300, will be returned.\r\n\r\nHence your offset should always be a multiple of limits.",
+      "x-traitTag": true
+    },
+    {
+      "name": "Try it out with Postman",
+      "description": "You can test our API with postman collection.\r\n\r\n#### Prerequisite  \r\n1. Download Postman App [here](https://www.getpostman.com/downloads/).\r\n2. Create a Postman account.\r\n3. Download the Postman Collection that suits your needs.\r\n\r\n4. Setup Your Environment Variables For Credentials [(Learn more)](https://learning.getpostman.com/docs/postman/variables-and-environments/variables/#environments-in-postman/)\r\n\r\n[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/1eebf10c08b8f90bdded)",
+      "x-traitTag": true
+    },
+    {
+      "name": "Callback Configuration",
+      "description": "For certain endpoints you might want to receive callbacks when the transaction becomes completed. You can configure them at the dashboard:\n\nSingapore: `https://www.Hydefi.io/merchant_settings/callback_settings`\n\nIndonesia: `https://id.Hydefi.com/merchant_settings/callback_settings`",
+      "x-traitTag": true
+    },
+    {
+      "name": "Testing",
+      "description": "API for testing purposes"
+    }
+  ],
+  "paths": {
+    "/v3/authorize/signup_login": {
+      "post": {
+        "tags": [
+          "Registration"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/authorize/signup_login\" \\\r\n  --header \"X-Hydefi-APP-API-KEY: $MERCHANT_APP_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --data \"{\\\"phone_no\\\" : \\\"+6287785725657\\\", \\\"signature\\\" : \\\"5488737c67d790565a15a2dbc3c98bf778aac2c0\\\"}\""
+          }
+        ],
+        "operationId": "signUpLogin",
+        "summary": "Sign Up Account/Trigger OTP",
+        "description": "This API is used to start user registration by inputting phone number.\nAfter this API is called, an OTP SMS will be sent to that number.\n\nYou can re-trigger this API to re-send OTP to the same phone number after 1 minute.\n\nThis OTP will expire in 10 minutes.\nThe SMS format will be:\n```\n[Hydefi] Your OTP is 123456. This is to set up payments for `merchant_name` . If this is not done by you, please report to http://bit.ly/HydefiSupport\n```\nThis API uses a pair of public key and secret key.\nThe header of this API uses public key called `X-Hydefi-APP-API-KEY`.\nYou will need `X-Hydefi-APP-SECRET-KEY`  to generate signature in the request body.\n",
+        "security": [
+          {
+            "X-Hydefi-APP-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "phone_no": {
+                    "description": "User mobile no. It should follow International format.",
+                    "type": "string",
+                    "example": "+6287785725657"
+                  },
+                  "signature": {
+                    "description": "SHA1-hex of (phone_no + X-Hydefi-APP_SECRET_KEY). More information on generating SHA1 here http://www.sha1-online.com/",
+                    "type": "string",
+                    "example": "5488737c67d790565a15a2dbc3c98bf778aac2c0"
+                  }
+                },
+                "required": [
+                  "phone_no",
+                  "signature"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "success"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/authorize/get_token": {
+      "get": {
+        "tags": [
+          "Registration"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/authorize/get_token?otp=541231&phone_no=%2B65XXXXXXXX&signature=bdc26373b3a78dd11dc840a1b7973f197cf34c91\" \\\r\n  --header \"X-Hydefi-APP-API-KEY: $MERCHANT_APP_KEY\" \\\r\n  --header \"Content-Type: application/x-www-form-urlencoded\""
+          }
+        ],
+        "operationId": "getToken",
+        "summary": "Get User API Token / Submit OTP",
+        "description": "After user receives the OTP SMS, merchant's app should capture the OTP and pass it to Hydefi via this API.\nThis API will finish the registration and returns user_api_token. user_api_token is used to control the user's account.\nYou should save the user_api_token for future usage. (to be put in the `X-Hydefi-USER-API-KEY` in headers of other APIs)\n\nIt will also return a is_fully_verified if they already have an Hydefi account and have completed our KYC process.\n\nThis API uses a pair of public key and secret key.\nThe header of this API uses public key called `X-Hydefi-APP-API-KEY`. You will need `X-Hydefi-APP-SECRET-KEY` to generate signature in the request body.",
+        "security": [
+          {
+            "X-Hydefi-APP-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "otp",
+            "in": "query",
+            "description": "User mobile no. It should follow International format.",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "541231"
+            }
+          },
+          {
+            "name": "phone_no",
+            "in": "query",
+            "description": "User mobile no. It should follow International format.",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "+6287785725657"
+            }
+          },
+          {
+            "name": "signature",
+            "in": "query",
+            "description": "SHA1-hex of (phone_no + OTP + APP_SECRET_KEY). More information on generating SHA1 here http://www.sha1-online.com/",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "71b72cb775fa0e52d815279c74964f5be18a88b8"
+            }
+          },
+          {
+            "name": "return_url",
+            "in": "query",
+            "x-custom-params": [
+              "Singapore"
+            ],
+            "description": "Url that new user will be redirected after they completed Hydefi account registration at `sign_up_url` provided.",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "71b72cb775fa0e52d815279c74964f5be18a88b8",
+              "default": "<Endpoint>/v3/account_registration/completed"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "success",
+                  "id": "user_csn7v5lyn4a6",
+                  "user_api_token": "A-Bm4vmjmGyhRaMEoxqBGeoXCEQwJYksrTXc6-ypsyk",
+                  "currency": "idr",
+                  "is_fully_verified": true
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user": {
+      "put": {
+        "operationId": "submitKYC",
+        "tags": [
+          "Registration"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request PUT \"$BASE_URL/v3/user\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --data \"{\\\"mother_maiden_name\\\": \\\"Luna\\\", \\\"id_front_url\\\": \\\"http://res.freestockphotos.biz/pictures/8/8453-a-blue-sky-with-white-clouds-pv.jpg\\\", \\\"selfie_2id_url\\\": \\\"http://res.freestockphotos.biz/pictures/8/8453-a-blue-sky-with-white-clouds-pv.jpg\\\",\r\n\t\\\"callback_url\\\":\\\"https:/www.example.com/update\\\"}\r\n\r\n\""
+          }
+        ],
+        "summary": "Submit KYC Data",
+        "description": "To provide KYC data in order to change user from unverified status into fully verified status.  \n\nThe image/document provided us must be hosted in a URL then pass the URL to Hydefi via this API.  \nMake sure data type for your image is jpeg / png.  \nMaximum size of the image/ document is 10 MB.  \n\nAfter this data is sent, we will do some verifications on our side and may take some time before user gets fully verified.  In Indonesia, fully verified user will be backed by a savings account.\r\nThus, there are required parameters which are mother_maiden_name, id_front_url, selfie_2id_url.\r\nAdditional data will speed up the KYC process.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "x-custom-params-requirements": {
+                  "Indonesia": [
+                    "id_front_url",
+                    "selfie_2id_url",
+                    "full_name",
+                    "identity_no",
+                    "gender",
+                    "mother_maiden_name",
+                    "date_of_birth",
+                    "place_of_birth",
+                    "marital_status",
+                    "occupation",
+                    "city",
+                    "state",
+                    "postal_code",
+                    "address_line_1"
+                  ]
+                },
+                "properties": {
+                  "id_front_url": {
+                    "type": "string",
+                    "description": "URL storing the front image of user identity card"
+                  },
+                  "selfie_2id_url": {
+                    "type": "string",
+                    "description": "URL storing the selfie of user holding their id card"
+                  },
+                  "fullname": {
+                    "type": "string",
+                    "description": "Account holder full name"
+                  },
+                  "mother_maiden_name": {
+                    "type": "string",
+                    "description": "Name of Mother"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "description": "Account holder firstname"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "description": "Account holder lastname"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "User email"
+                  },
+                  "date_of_birth": {
+                    "type": "string",
+                    "description": " Date of birth for account holder in yyyy-mm-dd"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "description": "Gender. Possible values: male / female"
+                  },
+                  "address_line_1": {
+                    "type": "string",
+                    "description": "Address line 1"
+                  },
+                  "address_line_2": {
+                    "type": "string",
+                    "description": "Address line 2"
+                  },
+                  "nationality": {
+                    "type": "string",
+                    "description": "Account holder nationality"
+                  },
+                  "postal_code": {
+                    "type": "string",
+                    "description": "Address postal code"
+                  },
+                  "identity_no": {
+                    "type": "string",
+                    "description": "Account holder national identity number or, KTP number of Indonesian."
+                  },
+                  "nric_type": {
+                    "type": "string",
+                    "description": "Optional. Account holder's identity type. Allowable values: nric, fin, passport."
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "Account holder country of residence."
+                  },
+                  "city": {
+                    "type": "string",
+                    "description": "Account holder city of residence."
+                  },
+                  "annual_income": {
+                    "type": "integer",
+                    "description": "Annual income of user in the local currency (SGD/IDR)"
+                  },
+                  "id_back_url": {
+                    "type": "string",
+                    "description": "URL storing the back of the user id card"
+                  },
+                  "proof_of_address_url": {
+                    "type": "string",
+                    "description": "URL storing the proof of address"
+                  },
+                  "support_document_1_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL storing the image/pdf of support documents like proof of user income"
+                  },
+                  "support_document_2_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL storing the image/pdf of support documents like proof of user income"
+                  },
+                  "support_document_3_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL storing the image/pdf of support documents like proof of user income"
+                  },
+                  "support_document_4_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL storing the image/pdf of support documents like proof of user income"
+                  },
+                  "support_document_5_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL storing the image/pdf of support documents like proof of user income"
+                  },
+                  "meta_data": {
+                    "type": "string",
+                    "description": "Addtional data like Jumio info dump."
+                  },
+                  "place_of_birth": {
+                    "type": "string",
+                    "description": "Account holder’s birth place."
+                  },
+                  "blood_type": {
+                    "type": "string",
+                    "description": " Account holder’s blood type, without rhesus. Possible values: ‘A’, ‘B’, 'AB’, or 'O’"
+                  },
+                  "marital_status": {
+                    "type": "string",
+                    "description": "Only Indonesia. Account holder’s marital status according to his/her KTP. Possible Values: 'Belum Kawin’, 'Kawin’, 'Janda’, or 'Duda’"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "available_balance": "0.32",
+                  "ledger_balance": "0.32",
+                  "bank_transfer_rates": "0.0",
+                  "bank_transfer_fees": "0.45",
+                  "first_name": "Winston",
+                  "last_name": "Andersen",
+                  "date_of_birth": "1986-02-27",
+                  "country_of_birth": "",
+                  "gender": "male",
+                  "email": "winston@Hydefi.com",
+                  "country": "id",
+                  "nationality": "Indonesian",
+                  "address_line_1": "Blk 712 loyang Avenue 5",
+                  "address_line_2": "#01-41",
+                  "postal_code": "340712",
+                  "nric_type": "",
+                  "identity_no": "317201180894005",
+                  "nric_issue_date": "",
+                  "phone_no": "+6287785725657",
+                  "bank_accounts": [
+                    {
+                      "id": 69,
+                      "account_no": "1150006390175",
+                      "account_holder_name": "PROD ONLY",
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "BCA",
+                      "usage": "all"
+                    },
+                    {
+                      "id": 175,
+                      "account_no": "1680366060",
+                      "account_holder_name": "PROD ONLY",
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "BCA",
+                      "usage": "all"
+                    },
+                    {
+                      "id": 177,
+                      "account_no": "1150006390175",
+                      "account_holder_name": "PROD ONLY",
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "MANDIRI",
+                      "usage": "all"
+                    },
+                    {
+                      "id": 207,
+                      "account_no": "1234567890",
+                      "account_holder_name": "Some Name",
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "BCA",
+                      "usage": "all"
+                    }
+                  ],
+                  "annual_income": "",
+                  "id_front": "15332940588453-a-blue-sky-with-white-clouds-pv.jpg",
+                  "id_front_url": "https://sandbox-Hydefi-id.s3-ap-southeast-1.amazonaws.com/users/nric_fronts/000/000/374/original/15332940588453-a-blue-sky-with-white-clouds-pv.jpg?AWSAccessKeyId=AKIAJQ3UR7B3U4NXLBNA&Expires=1533297752&Signature=eBPUqBc0tCwmmpbKu5HmISLBiaQ%3D",
+                  "selfie_2id": "15332940588453-a-blue-sky-with-white-clouds-pv.jpg",
+                  "selfie_2id_url": "https://sandbox-Hydefi-id.s3-ap-southeast-1.amazonaws.com/users/nric_selfies/000/000/374/original/15332940588453-a-blue-sky-with-white-clouds-pv.jpg?AWSAccessKeyId=AKIAJQ3UR7B3U4NXLBNA&Expires=1533297752&Signature=cK6icTFvQC6XSOPMfLSMjZ1ZVlo%3D",
+                  "account_locked": false,
+                  "kyc_verified": true,
+                  "meta_data": "",
+                  "place_of_birth": null,
+                  "blood_type": null,
+                  "rt_rw": null,
+                  "administrative_village": null,
+                  "district": null,
+                  "religion": null,
+                  "marital_status": null,
+                  "occupation": null,
+                  "mother_maiden_name": "Luna"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "getUserInfo",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "User Account"
+        ],
+        "summary": "Get User Info",
+        "description": "The main usage of this API is to get the current user. One user can have multiple accounts, and the balance returned is the account tied to the current API token. \r\nYou can also use this API to check various data of the user such as first_name, last_name.\r\n\r\nDescription of some notable response\r\n\r\nKey | Value | Description \r\n--------------- |  ----------- | -----\r\nkyc_status | fully_verified | current_kyc_status of user, enum of `not_submitted`, `in_process`, `rejected`, `fully_verified`",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "user_gksj43jgzgqv",
+                  "available_balance": "2595750.79",
+                  "ledger_balance": "2595750.79",
+                  "bank_transfer_rates": "0.0",
+                  "bank_transfer_fees": "0.45",
+                  "first_name": "docs.Hydefi.io",
+                  "last_name": "testingaccount",
+                  "date_of_birth": "1990-11-09",
+                  "country_of_birth": "SG",
+                  "gender": "male",
+                  "email": "docs@Hydefi.com",
+                  "country": "sg",
+                  "state": "Singapore",
+                  "city": "Singapore",
+                  "nationality": "Singaporean",
+                  "address_line_1": "Blk 71 Ayer Rajah Cresent",
+                  "address_line_2": "#02-52",
+                  "postal_code": "541121",
+                  "nric_type": "",
+                  "identity_no": "S8117102G",
+                  "nric_issue_date": "",
+                  "phone_no": "+6281128125",
+                  "bank_accounts": [
+                    {
+                      "id": 329,
+                      "account_no": "800006788912",
+                      "account_holder_name": "Tian Wei",
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "CIMB_NIAGA",
+                      "usage": "all"
+                    },
+                    {
+                      "id": 561,
+                      "account_no": "2480096820",
+                      "account_holder_name": null,
+                      "detected_name": "PROD ONLY",
+                      "verification_status": "pending",
+                      "verified": true,
+                      "bank_abbrev": "BCA",
+                      "usage": "all"
+                    }
+                  ],
+                  "annual_income": "",
+                  "id_front": "15357011921535007959147096578.jpg",
+                  "id_front_url": "https://sandbox-Hydefi-id.s3-ap-southeast-1.amazonaws.com/users/nric_fronts/000/000/383/original/15357011921535007959147096578.jpg?AWSAccessKeyId=AKIAJQ3UR7B3U4NXLBNA&Expires=1540979796&Signature=JVrLUGZUtYhfhef4mNXD0L45X%2BA%3D",
+                  "selfie_2id": "15357011921535007959147096578.jpg",
+                  "selfie_2id_url": "https://sandbox-Hydefi-id.s3-ap-southeast-1.amazonaws.com/users/nric_selfies/000/000/383/original/15357011921535007959147096578.jpg?AWSAccessKeyId=AKIAJQ3UR7B3U4NXLBNA&Expires=1540979796&Signature=UUMSRP%2FWw55PY23oCLBYF5moZ60%3D",
+                  "account_locked": false,
+                  "google_auth_enabled": false,
+                  "kyc_verified": true,
+                  "kyc_needed": true,
+                  "meta_data": "",
+                  "display_name": "HydefiDocsTest",
+                  "avatar": "cardProfileDefault.png",
+                  "avatar_url": "cardProfileDefault.png",
+                  "is_guest": false,
+                  "is_trial": true,
+                  "place_of_birth": null,
+                  "blood_type": null,
+                  "rt_rw": null,
+                  "administrative_village": null,
+                  "district": null,
+                  "religion": null,
+                  "marital_status": null,
+                  "occupation": null,
+                  "mother_maiden_name": "Putras"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/verify": {
+      "patch": {
+        "tags": [
+          "Testing"
+        ],
+        "servers": [
+          {
+            "description": "Singapore Sandbox for testing",
+            "url": "https://sandbox.hydefi.io/merchant"
+          }
+        ],
+        "operationId": "mockKYCVerification",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request PATCH \"$BASE_URL/v3/user/verify\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --data \"\""
+          }
+        ],
+        "summary": "Mock KYC Verification",
+        "description": "This API verifies the user with corresponding API KEY. This API can only be called from sandbox.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "success"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/activities": {
+      "get": {
+        "operationId": "getTransactionHistory",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user/activities\" \\\r\n  --header \"Content-Type: application/x-www-form-urlencoded\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --data \"\""
+          }
+        ],
+        "tags": [
+          "User Account"
+        ],
+        "summary": "Get Transaction History",
+        "description": "This API displays a user’s transaction history. \n\n\nThis API displays a user’s transaction history.\n\nI.e. user’s transactions with other merchants will not be displayed.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Max number of results to return per page.",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "Earliest date to query",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "DateTime, iso8601 format.URL encode this.",
+              "default": "1 month ago"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "Latest date to query",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "DateTime, iso8601 format.URL encode this.",
+              "default": "Now"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset results for pagination purposes.",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "description": "Will only show transactions of that type. You can add additional types by separating with a comma.",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "enum": [
+                "Charge",
+                "Payout",
+                "Deposit",
+                "Withdrawal"
+              ],
+              "type": "string",
+              "default": "All types included"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "activities": [
+                    {
+                      "fee": 0,
+                      "created_at": "2019-09-18T14:58:29+08:00",
+                      "wallet_name": "Digital Goods",
+                      "id": "contract_52683616c80b4c91bc6d6aa83eca4874",
+                      "amount": 559,
+                      "status": "completed",
+                      "type": "Transfer",
+                      "metadata": {
+                        "origin_name": "John Tan",
+                        "destination_name": "ABC Business",
+                        "description": "This is a charge, money is moving from a customer to the business account"
+                      },
+                      "order_id": "12345",
+                      "invoice_id": null
+                    },
+                    {
+                      "fee": 0,
+                      "created_at": "2019-09-18T11:55:04+08:00",
+                      "wallet_name": "Digital Goods",
+                      "id": "contract_402539e247424cf1af35aae32b087727",
+                      "amount": -695.29,
+                      "status": "completed",
+                      "type": "Transfer",
+                      "metadata": {
+                        "origin_name": "ABC Business",
+                        "destination_name": "Mary Jane",
+                        "description": "This is a payout, money is moving from the business account to a customer"
+                      },
+                      "order_id": null,
+                      "invoice_id": "87676"
+                    },
+                    {
+                      "fee": 0,
+                      "created_at": "2019-08-25T21:47:59+08:00",
+                      "wallet_name": "Digital Goods",
+                      "id": "contract_aaebb4c688ea4a34b73ede332a5c78c3",
+                      "amount": -99.88,
+                      "status": "completed",
+                      "type": "Withdrawal",
+                      "metadata": {
+                        "description": "POSB 208767841"
+                      }
+                    },
+                    {
+                      "fee": 0,
+                      "created_at": "2019-08-24T14:50:43+08:00",
+                      "wallet_name": "Digital Goods",
+                      "id": "contract_e8db413d5f94476aa38de79b04128db6",
+                      "amount": 300,
+                      "status": "completed",
+                      "type": "Deposit",
+                      "metadata": {
+                        "description": "Hydefi - CIMB"
+                      }
+                    }
+                  ],
+                  "activities_returned": 10,
+                  "limit": 10,
+                  "offset": 0,
+                  "start_date": "2019-08-20T14:02:38+08:00",
+                  "end_date": "2019-09-20T23:59:59+08:00"
+                },
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the Charge/Payout/Withdrawal/Payout. You can use this ID to query Charges and Payouts."
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Transaction type. Charge and Payout are named as 'Transfer', because they are internal transfers between two Hydefi accounts.",
+                      "enum": [
+                        "Transfer",
+                        "Deposit",
+                        "Withdrawal"
+                      ]
+                    },
+                    "order_id": {
+                      "type": "string",
+                      "description": "If it is a charge, it will have a order_id"
+                    },
+                    "invoice_id": {
+                      "type": "string",
+                      "description": "If it is a payout, it will have a invoice_id"
+                    },
+                    "amount": {
+                      "type": "float",
+                      "description": "If money going out of account, negative. If coming in, positive. Note that only a completed Charge will actually deduct money. For example, if a Charge is expired/accepted/pending/unclaimed, no money will actually flow in/out of the wallet, even though there is a amount displayed."
+                    },
+                    "fee": {
+                      "type": "float",
+                      "description": "Fee charged by Hydefi for the transaction, if any. Will be 0 if no fees"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Shows additional information about a transaction"
+                    },
+                    "activities_returned": {
+                      "type": "integer",
+                      "description": "Number of activities returned. If activities returned is less than the limit, this is the final page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/transfer_info": {
+      "get": {
+        "operationId": "getTransferInfo",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "User Account"
+        ],
+        "summary": "Get Transfer Info / Get Virtual Account Number",
+        "description": "API to get bank account number to be shown to user.  \r\nPlease consult with us to get topup instruction template text to be shown.\r\n\r\nThe common usage of this API is to parse the transfer_info_array given by us and parse it and use the VA numbers of the bank you want\r\n\r\n#### For Virtual Account solution:  \r\nThis API is to get the Virtual Account Number to be displayed to the user\r\n\r\n#### For non Virtual Account solution:  \r\nThis API will show the bank account number to do top up.  \r\nPlease consult with us as this solution will require user to use some other identifier to detect the deposit.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "unique_id": "98888888",
+                  "wallet_name": "Digital Goods",
+                  "bank_name_full": "CIMB Bank Berhad",
+                  "bank_abbrev": "CIMB",
+                  "bank_name_abbreviation": "CIMB",
+                  "bank_account_no": "2000492623",
+                  "bank_payee_name": "Hydefi Pte Ltd",
+                  "bank_code": "7986",
+                  "branch_code": "",
+                  "branch_area": "",
+                  "img_src": null
+                },
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "description": "ID of the Charge/Payout/Withdrawal/Payout. You can use this ID to query Charges and Payouts."
+                    },
+                    "type": {
+                      "description": "activity type",
+                      "enum": [
+                        "Credit Card",
+                        "Charge",
+                        "Payout",
+                        "Withdrawal",
+                        "Deposit"
+                      ]
+                    },
+                    "amount": {
+                      "description": "If money going out of account, negative. If coming in, positive. Note that only a completed Charge will actually deduct money. For example, if a Charge is expired/accepted/pending/unclaimed, no money will actually flow in/out of the wallet, even though there is a amount displayed."
+                    },
+                    "fee": {
+                      "description": "Fee charged by Hydefi for the transaction, if any. Will be 0 if no fees"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Shows additional information about a transaction"
+                    },
+                    "activities_returned": {
+                      "type": "string",
+                      "description": "Number of activities returned. If activities returned is less than the limit, this is the final page."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/charges": {
+      "post": {
+        "operationId": "createCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/charges\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --form \"amount=10000\" \\\r\n  --form \"order_id=Order_docs_12345\" \\\r\n  --form \"description=Testing for Documentation\" \\\r\n  --form \"notify_url=https://www.example.com/updates\" \\\r\n  --form \"meta_data=test metadata\""
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "Create Charge",
+        "description": "The following API will allow you to move money from user's account to merchant's account.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Transaction Amount."
+                  },
+                  "order_id": {
+                    "type": "string",
+                    "description": "Unique ref no provided by you to prevent double charging, this cannot be repeated."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Testing for Documentation."
+                  },
+                  "meta_data": {
+                    "type": "string",
+                    "description": "A set of key/value pairs that you can attach to a charge. It can be useful for storing additional information about the customer in a structured format."
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "3-letter ISO code for currency"
+                  },
+                  "customer": {
+                    "type": "string",
+                    "description": "Customer email or phone number. If provided, only that user can use the checkout_url returned. If the customer does not exist, an account will be created for them using the email/phone number provided. An OTP will be sent to the email/phone for the user to log in."
+                  },
+                  "return_url": {
+                    "type": "string",
+                    "description": "URL Hydefi will redirect customer to on completion of Hydefi checkout."
+                  },
+                  "debit_only": {
+                    "type": "boolean",
+                    "description": "When this is true, this charge will attempt to debit from users existing balance/card on file. Status returned will be “completed” on successful debit or “cancelled” when there insufficient funds / valid card on file in user wallet."
+                  },
+                  "card_only": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "When this is true, this charge will will attempt to take payments via credit/debit card."
+                  },
+                  "redirect": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "When this is true, instead of the JSON response, Hydefi will automatically redirect the request to our checkout page"
+                  },
+                  "cancel_url": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "URL Hydefi will redirect customer to on cancellation of Hydefi checkout."
+                  },
+                  "google_auth": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "When this is true and user_phone_no is provided, instead of phone SMS OTP, user can use Google Authenticator to do OTP. See Authorize a Charge"
+                  },
+                  "receipt_email": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "The email address to send this charge’s receipt."
+                  },
+                  "skip_notifications": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "Setting this to true will not send transaction reminders/cancelled/expired emails/SMS. Users will still receive payment completed notification."
+                  }
+                },
+                "required": [
+                  "amount",
+                  "order_id",
+                  "currency"
+                ],
+                "x-custom-params-requirements": {
+                  "Indonesia": [
+                    "user_api_token"
+                  ],
+                  "Singapore": [
+                    "currency"
+                  ]
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "amount": 10000,
+                    "order_id": "Order_docs_12345",
+                    "description": "Testing for Documentation",
+                    "notify_url": "https://www.example.com/updates",
+                    "meta_data": "test metadata"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_7abf6bb130d44c02862982ff6022875d",
+                  "object": "Sobatku::TransferContract",
+                  "status": "processing",
+                  "amount": "10000.0",
+                  "total_amount": "10000.0",
+                  "currency": "idr",
+                  "fee_amount": "100.0",
+                  "notify_url": "https://www.example.com/updates",
+                  "wallet_name": "General Wallet",
+                  "order_id": "Order_docs_12345",
+                  "description": "Testing for Documentation",
+                  "receipt_email": "winston@Hydefi.com",
+                  "metadata": {
+                    "callback_url": "https://www.example.com/updates",
+                    "merchant_metadata": "test metadata"
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/charges?limit=1\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "List all Charge",
+        "description": "Returns a list of charges you’ve previously created. The charges are returned in sorted order, with the most recent charges appearing first.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "contract_b840cc9fc5a359c22ed2ccef3427aacd",
+                    "object": "TransferContract",
+                    "checkout_url": "https://sandbox.Hydefi.io/checkout_transaction/b840cc9fc5a359c22ed2ccef3427aacd",
+                    "notify_url": "https://mysite.com/payment_notification",
+                    "return_url": "https://mysite.com/return",
+                    "cancel_url": "https://mysite.com/cancel",
+                    "amount": "9.99",
+                    "currency": "SGD",
+                    "order_id": "A012312",
+                    "description": "Carousell user - Konsolidate",
+                    "receipt_email": "",
+                    "total_amount": "12.49",
+                    "fee_amount": "0.12",
+                    "status": "completed",
+                    "metadata": {
+                      "firstname": "Tianwei",
+                      "lastname": "Liu"
+                    },
+                    "transfer_info": {
+                      "bank_name_full": "United Overseas Bank",
+                      "bank_name_abbreviation": "UOB",
+                      "bank_account_no": "123456789",
+                      "bank_code": "7375",
+                      "swift_code": "UOVBSGSGXXX",
+                      "unique_id": "89898989",
+                      "outstanding_amount": "0"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/charges/{id}/authorize": {
+      "post": {
+        "operationId": "authorizeCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/charges/<id>/authorize\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  -H \"Content-Type: application/json\" \\\r\n  -d '{\"auth_code\": \"512312\"}'"
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "Authorize Charge",
+        "description": "Authorize a previously created charge. This is an optional process that will allow buyer to skip the sign in flow on Hydefi, allowing checkout to be completed on merchant site. If a correct auth_code is provided, the charge will immediately become “accepted” by the buyer.\r\n\r\nThis endpoint is only used if  `user_phone_no`  param was passed in during charge creation. The response will return the  `transfer_info`  object containing information the bank the user should transfer to. If multiple banks are available, the  `transfer_info_array`  will also be returned.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Charge ID that could be retrieved from the response in Create Charge endpoint",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "contract_7abf6bb130d44c02862982ff6022875d"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Either `auth_code` or `google_auth_code` required",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "auth_code",
+                  "google_auth_code"
+                ],
+                "properties": {
+                  "auth_code": {
+                    "type": "string",
+                    "description": "Either auth_code or google_auth_code required. SMS OTP code provided to the buyer."
+                  },
+                  "google_auth_code": {
+                    "type": "string",
+                    "description": "Google Auth OTP code provided to the buyer. If google_auth_enabled of Get Account Info is false, user has not enabled Google Auth with Hydefi. Direct users to Hydefi 2FA setup page"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "value": {
+                    "id": "contract_b840cc9fc5a359c22ed2ccef3427aacd",
+                    "object": "TransferContract",
+                    "checkout_url": "https://sandbox.Hydefi.io/checkout_transaction/b840cc9fc5a359c22ed2ccef3427aacd",
+                    "notify_url": "https://mysite.com/payment_notification",
+                    "return_url": "https://mysite.com/return",
+                    "cancel_url": "https://mysite.com/cancel",
+                    "amount": "9.99",
+                    "currency": "SGD",
+                    "order_id": "A012312",
+                    "description": "Carousell user - Konsolidate",
+                    "receipt_email": "",
+                    "total_amount": "12.49",
+                    "fee_amount": "0.12",
+                    "status": "accepted",
+                    "metadata": {
+                      "firstname": "Tianwei",
+                      "lastname": "Liu"
+                    },
+                    "transfer_info": {
+                      "bank_name_full": "United Overseas Bank",
+                      "bank_name_abbreviation": "UOB",
+                      "bank_account_no": "123456789",
+                      "bank_code": "7375",
+                      "swift_code": "UOVBSGSGXXX",
+                      "unique_id": "89898989",
+                      "outstanding_amount": "0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/charges/{id}/cancel": {
+      "post": {
+        "operationId": "cancelCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/charges/<CHARGE_ID>/cancel\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\"\r\n  -X POST"
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "Cancel Charge",
+        "description": "Cancelling a charge that has been previously created by not yet paid. To refund a paid charge, refer to creating a refund.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Charge ID that could be retrieved from the response in Create Charge endpoint",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "contract_7abf6bb130d44c02862982ff6022875d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "value": {
+                    "id": "contract_b840cc9fc5a359c22ed2ccef3427aacd",
+                    "object": "PendingTransferContract",
+                    "checkout_url": "https://sandbox.Hydefi.io/checkout_transaction/b840cc9fc5a359c22ed2ccef3427aacd",
+                    "notify_url": "https://mysite.com/payment_notification",
+                    "return_url": "https://mysite.com/return",
+                    "cancel_url": "https://mysite.com/cancel",
+                    "amount": "9.99",
+                    "currency": "SGD",
+                    "order_id": "A012312",
+                    "description": "Carousell user - Konsolidate",
+                    "receipt_email": "",
+                    "total_amount": "12.49",
+                    "fee_amount": "0.12",
+                    "status": "cancelled",
+                    "metadata": {
+                      "firstname": "Tianwei",
+                      "lastname": "Liu"
+                    },
+                    "transfer_info": {
+                      "bank_name_full": "United Overseas Bank",
+                      "bank_name_abbreviation": "UOB",
+                      "bank_account_no": "123456789",
+                      "bank_code": "7375",
+                      "swift_code": "UOVBSGSGXXX",
+                      "unique_id": "89898989",
+                      "outstanding_amount": "0"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/charges/{id}": {
+      "get": {
+        "operationId": "getCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/charges/contract_7abf6bb130d44c02862982ff6022875d\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: {{user-api-key}}\""
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "Get Charge",
+        "description": "Retrieves the details of a charge that has previously been created.\nSupply the ID that was returned from your previous request, and Hydefi will return the corresponding charge information.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Charge ID that could be retrieved from the response in Create Charge endpoint",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "contract_7abf6bb130d44c02862982ff6022875d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "summary": "Missing API KEY in header",
+                  "value": {
+                    "id": "contract_7abf6bb130d44c02862982ff6022875d",
+                    "object": "Sobatku::TransferContract",
+                    "status": "completed",
+                    "amount": "10000.0",
+                    "total_amount": "10000.0",
+                    "currency": "idr",
+                    "fee_amount": "100.0",
+                    "notify_url": "https://www.example.com/updates",
+                    "wallet_name": "General Wallet",
+                    "order_id": "Order_docs_12345",
+                    "description": "Testing for Documentation",
+                    "receipt_email": "winston@Hydefi.com",
+                    "metadata": {
+                      "callback_url": "https://www.example.com/updates",
+                      "merchant_metadata": "test metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/charges/{id}/refunds": {
+      "post": {
+        "operationId": "refundCharge",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/charges/%3Cid%3E/refunds\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: {{user-api-key}}\" \\\r\n  --data \"\""
+          }
+        ],
+        "tags": [
+          "Charge"
+        ],
+        "summary": "Refund Charge",
+        "description": "This API will refund a charge.\nBoth funds and fees in this transaction will be refunded to the user's Hydefi account.\nPlease use the merchant’s API key for this endpoint",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/securitySchemes/X-Hydefi-USER-API-KEY"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Charge ID that could be retrieved from the response in Create Charge endpoint",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "contract_7abf6bb130d44c02862982ff6022875d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "value": {
+                    "id": "contract_7abf6bb130d44c02862982ff6022875d",
+                    "object": "Sobatku::TransferContract",
+                    "status": "completed",
+                    "amount": "10000.0",
+                    "total_amount": "10000.0",
+                    "currency": "idr",
+                    "fee_amount": "100.0",
+                    "notify_url": "https://www.example.com/updates",
+                    "wallet_name": "General Wallet",
+                    "order_id": "Order_docs_12345",
+                    "description": "Testing for Documentation",
+                    "receipt_email": "winston@Hydefi.com",
+                    "metadata": {
+                      "callback_url": "https://www.example.com/updates",
+                      "merchant_metadata": "test metadata"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/payouts": {
+      "post": {
+        "operationId": "createPayout",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/payouts\" \\\r\n  --header \"X-Hydefi-APP-API-KEY: {{user-api-key}}\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --form \"user_api_token=$CUSTOMER_API_KEY\" \\\r\n  --form \"amount=15000.00\" \\\r\n  --form \"invoice_id=Order_docs_123\" \\\r\n  --form \"descriptions=Payment for Rent for July\""
+          }
+        ],
+        "tags": [
+          "Payout"
+        ],
+        "summary": "Create Payout",
+        "description": "The following API will allow you to move money from merchant's account to user's account.",
+        "security": [
+          {
+            "X-Hydefi-APP-API-KEY": [],
+            "user-api-token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "x-custom-params-requirements": {
+                  "Indonesia": [
+                    "user_api_token"
+                  ]
+                },
+                "required": [
+                  "amount",
+                  "invoice_id"
+                ],
+                "properties": {
+                  "user_api_token": {
+                    "type": "string",
+                    "description": "Your user API token which you can retrieve this from the get token API response"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Transaction Amount"
+                  },
+                  "invoice_id": {
+                    "type": "string",
+                    "description": "Unique ref no provided by you to prevent double charging, this cannot be repeated."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of transaction for display purposes"
+                  },
+                  "wallet_id": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "Your user API token which you can retrieve this from the get token API response"
+                  },
+                  "meta_data": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "Transaction Amount"
+                  },
+                  "recipient": {
+                    "type": "string",
+                    "x-custom-params": [
+                      "Singapore"
+                    ],
+                    "description": "Either recipient or user_api_token required. Email or Mobile Phone Number of the recipient for this payout."
+                  },
+                  "currency": {
+                    "type": "string",
+                    "deprecated": true,
+                    "description": "An internal description that you can attach to a payout. It can be useful for storing additional information about the customer in a structured format. You will be provided with these meta_data in your queries for payouts."
+                  }
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "user_api_token": "user-api-key",
+                    "amount": 10000,
+                    "invocie_id": "Order_docs_12345",
+                    "description": "Testing for Documentation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_9b562994c4274d9993ba93c94619a8f6",
+                  "recipient": "winston@Hydefi.com",
+                  "metadata": {
+                    "merchant_metadata": ""
+                  },
+                  "invoice_id": "Order_docs_123",
+                  "descriptions": "Payment for Rent for July",
+                  "process_type": "normal",
+                  "amount": "15000.0",
+                  "currency": "idr",
+                  "bank": null,
+                  "bank_account_no": null,
+                  "created_date": "2019-04-12T07:10:50Z",
+                  "completed_date": null,
+                  "status": "processing",
+                  "wallet_id": 1,
+                  "wallet_name": "General Wallet",
+                  "balance": "102969900.0",
+                  "fee_amount": "0.0"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listPayout",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/payouts?limit=1\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Payout"
+        ],
+        "summary": "List All Payout",
+        "description": "Returns a list of payouts you’ve previously created. The payouts are returned in sorted order, with the most recent charges appearing first.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "A limit on the number of objects to be returned. Limit can range between 1 and 50 items.",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "10"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "6fa51cd08c8ae115f858593412bb72c8",
+                    "recipient": "+65XXXXXXXX",
+                    "invoice_id": "AZ0001",
+                    "amount": 150,
+                    "currency": "SGD",
+                    "descriptions": "Payment for Rent for July",
+                    "bank": "",
+                    "bank_account_no": "",
+                    "created_date": "2015-07-01T19:01:25Z",
+                    "completed_date": "",
+                    "status": "completed",
+                    "meta_data": "Liu Tianwei"
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/payouts/{id}": {
+      "get": {
+        "operationId": "getPayout",
+        "tags": [
+          "Payout"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/payouts/contract_9b562994c4274d9993ba93c94619a8f6\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: {{user-api-key}}\""
+          }
+        ],
+        "summary": "Get Payout",
+        "description": "Retrieves the details of a payout that has previously been created.\nSupply the unique payout ID that was returned from your previous request, and Hydefi will return the corresponding payout information.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Payout ID. You can get this from the create payout API.",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "contract_9b562994c4274d9993ba93c94619a8f6"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_9b562994c4274d9993ba93c94619a8f6",
+                  "recipient": "winston@Hydefi.com",
+                  "metadata": {
+                    "merchant_metadata": ""
+                  },
+                  "invoice_id": "Order_docs_123",
+                  "descriptions": "Payment for Rent for July",
+                  "process_type": "normal",
+                  "amount": "15000.0",
+                  "currency": "idr",
+                  "bank": null,
+                  "bank_account_no": null,
+                  "created_date": "2019-04-12T07:10:50Z",
+                  "completed_date": "2019-04-12T07:11:22Z",
+                  "status": "completed",
+                  "wallet_id": 1,
+                  "wallet_name": "General Wallet",
+                  "balance": "102969900.0",
+                  "fee_amount": "0.0"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account": {
+      "post": {
+        "operationId": "addBankAccount",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/user/bank_account\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --data \"{\\\"account_no\\\": \\\"1680366060\\\", \\\"bank\\\":\\\"BCA\\\"}\""
+          }
+        ],
+        "tags": [
+          "Bank Account"
+        ],
+        "summary": "Add Bank Account",
+        "description": "This API will be used to attach a new bank account to a user.\nYou will be able to withdraw user's balance to this bank account.\nIn Indonesia Production, This API will return the detected_name as provided from the bank.\nThe account_holder_name you provided and detected_name needs to be similar (doesn't need to be 100% match).",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "x-custom-requirements": {
+                  "Indonesia": [
+                    "account_holder_name"
+                  ]
+                },
+                "required": [
+                  "account_no",
+                  "bank"
+                ],
+                "properties": {
+                  "account_no": {
+                    "type": "string",
+                    "description": "bank account number"
+                  },
+                  "bank": {
+                    "type": "string",
+                    "description": "Bank abbreviation. You can get the list of bank account abbreviation from the Get Bank and Abbreviation Mapping API."
+                  },
+                  "account_holder_name": {
+                    "type": "string",
+                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Indo Sandbox"
+                  },
+                  "bank_account_proof": {
+                    "type": "object",
+                    "description": "This params takes in an object with properties {fileData, fileName}. File data should be in format base64, and we only accept PDF, PNG, JPG, JPEG."
+                  }
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "account_no": "0393123432",
+                    "bank": "DBS",
+                    "account_holder_name": "Tian Wei",
+                    "bank_account_proof": {
+                      "fileData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB2YAAAWuCAYAAAC....",
+                      "fileName": "bankstatement.pdf"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 175,
+                    "account_no": "1680366060",
+                    "account_holder_name": "PROD ONLY",
+                    "bank_abbrev": "DBS",
+                    "disabled": "false",
+                    "hidden": "false",
+                    "verification_status": "pending",
+                    "bank_account_proof_file_name": "bankstatement.pdf",
+                    "bank_account_proof": "/assets/user_bank_accounts/bank_account_proofs/bankstatement.pdf",
+                    "bank_account_proof_tiny": "/assets/user_bank_accounts/bank_account_proofs/thumb/bankstatement.pdf",
+                    "usage": "all",
+                    "reject_reason": null
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listBankAcc",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user/bank_account\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Bank Account"
+        ],
+        "summary": "List Bank Account",
+        "description": "This will list all bank accounts belonging to the user.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 175,
+                    "account_no": "1680366060",
+                    "account_holder_name": "PROD ONLY",
+                    "bank_abbrev": "DBS",
+                    "disabled": "false",
+                    "hidden": "false",
+                    "verification_status": "verified",
+                    "bank_account_proof_file_name": "bankstatement.pdf",
+                    "bank_account_proof": "/assets/user_bank_accounts/bank_account_proofs/bankstatement.pdf",
+                    "bank_account_proof_tiny": "/assets/user_bank_accounts/bank_account_proofs/thumb/bankstatement.pdf",
+                    "usage": "all",
+                    "reject_reason": null
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account/{bank_account_id}": {
+      "put": {
+        "operationId": "updateBankAccount",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request PUT \"$BASE_URL/v3/user/bank_account/649\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --data \"{\\\"account_no\\\": \\\"0393123432\\\", \\\"bank\\\":\\\"CIMB_NIAGA\\\", \\\"account_holder_name\\\": \\\"PROD ONLY\\\"}\""
+          }
+        ],
+        "tags": [
+          "Bank Account"
+        ],
+        "summary": "Update Bank Account",
+        "description": "This request allows you to update an existing bank account record.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bank_account_id",
+            "in": "path",
+            "description": "The ID of the bank account. You can retrieve this from in the response of Create Bank Account and List Bank Account API",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "175"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "x-custom-requirements": {
+                  "Indonesia": [
+                    "account_holder_name"
+                  ]
+                },
+                "required": [
+                  "account_no",
+                  "bank"
+                ],
+                "properties": {
+                  "account_no": {
+                    "type": "string",
+                    "description": "bank account number"
+                  },
+                  "bank": {
+                    "type": "string",
+                    "description": "Bank abbreviation. You can get the list of bank account abbreviation from the Get Bank and Abbreviation Mapping API."
+                  },
+                  "account_holder_name": {
+                    "type": "string",
+                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Indo Sandbox"
+                  },
+                  "bank_account_proof": {
+                    "type": "object",
+                    "description": "This params takes in an object with properties {fileData, fileName}. File data should be in format base64, and we only accept PDF, PNG, JPG, JPEG."
+                  }
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "account_no": "0393123432",
+                    "bank": "DBS",
+                    "account_holder_name": "Tian Wei",
+                    "bank_account_proof": {
+                      "fileData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB2YAAAWuCAYAAAC....",
+                      "fileName": "bankstatement.pdf"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 175,
+                    "account_no": "1680366060",
+                    "account_holder_name": "PROD ONLY",
+                    "bank_abbrev": "DBS",
+                    "disabled": "false",
+                    "hidden": "false",
+                    "verification_status": "pending",
+                    "bank_account_proof_file_name": "bankstatement.pdf",
+                    "bank_account_proof": "/assets/user_bank_accounts/bank_account_proofs/bankstatement.pdf",
+                    "bank_account_proof_tiny": "/assets/user_bank_accounts/bank_account_proofs/thumb/bankstatement.pdf",
+                    "usage": "all",
+                    "reject_reason": null
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteBankAccount",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request DELETE \"$BASE_URL/v3/user/bank_account/175\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --data \"\""
+          }
+        ],
+        "tags": [
+          "Bank Account"
+        ],
+        "summary": "Delete Bank Account",
+        "description": "This request allows you to delete an existing bank account record.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bank_account_id",
+            "in": "path",
+            "description": "The ID of the bank account. You can retrieve this from in the response of Create Bank Account and List Bank Account API",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "175"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 175,
+                    "account_no": "1680366060",
+                    "account_holder_name": "PROD ONLY",
+                    "detected_name": "PROD ONLY",
+                    "verification_status": "pending",
+                    "verified": true,
+                    "bank_abbrev": "BCA",
+                    "usage": "all"
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account/{bank_account_id}/withdraw": {
+      "post": {
+        "operationId": "createWithdrawal",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/user/bank_account/175/withdraw\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --data \"{\\\"amount\\\": \\\"120000.0\\\"}\""
+          }
+        ],
+        "tags": [
+          "Withdraw"
+        ],
+        "summary": "Create Withdrawal",
+        "description": "Withdrawal Time varies upon country. \r\nFor Indonesia, withdrawal time is instantaneous.\r\nFor Singapore, withdrawal time depends on whether it is an express withdrawal.\r\n\r\n#### Withdrawal on Behalf\r\nIf you wish to withdraw to a bank account that does not belong to you, add in user_api_token in the params.\r\n\r\nBehind the scenes, Hydefi does a payout of funds from your Hydefi account to that user’s Hydefi account, followed by a withdrawal. This is required for compliance purposes as we cannot directly withdraw funds to a bank account that does not belong to you.\r\n\r\nTo clarify this:\r\n\r\nPlacing of Hydefi_api_token | Flow | Remark\r\n--------------- |  ----------- | -----\r\nmerchant's token in header, user's token in body| merchant's Hydefi account -> user's Hydefi account -> user's bank Account | We call this `Withdrawal on Behalf`\r\nuser's token in header, nothing in body| user's Hydefi account -> user's bank Account | This is the standard Withdrawal usage\r\nmerchant's token in header, nothing in body| merchant's Hydefi account -> merchant's bank Account | This is usually done via Hydefi Dashboard\r\n",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "bank_account_id",
+            "in": "path",
+            "description": "The ID of the bank account. You can retrieve this from in the response of Create Bank Account and List Bank Account API",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "175"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "required": [
+                  "amount",
+                  "idempotency_id"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "description": "Transaction Amount"
+                  },
+                  "idempotency_id": {
+                    "type": "string",
+                    "description": "Unique ref no provided by you to prevent double transaction, this cannot be repeated, Currently only activated for Indonesia"
+                  },
+                  "express": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Only Singapore.\n\nExpress Withdrawal has fees but will arrive at recipient bank within 24 hrs.\nStandard withdrawal is free but takes 2-3 business day to arrive at recipient bank.\nDefaults to false"
+                  },
+                  "user_api_token": {
+                    "type": "string",
+                    "description": "Use this param if you want to withdraw to another user’s bank account instead of your own."
+                  }
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "amount": "1200000",
+                    "idempotency_id": "Order_1234"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "available_balance": 68596,
+                  "ledger_balance": 68596,
+                  "withdrawal_request": {
+                    "id": "contract_d3b5b84ba7814eb28ed4f9845d65e53a",
+                    "idempotency_id": "Order_12346",
+                    "type": "Sobatku/withdrawal",
+                    "status": "pending",
+                    "amount": "110000.0",
+                    "fees": "0.0",
+                    "account_no": "1680366060",
+                    "bank_abbrev": "BCA",
+                    "express": true,
+                    "value_date": null,
+                    "failure_reason": null,
+                    "created_at": "2018-12-05T11:15:37+07:00"
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account/withdrawal_requests": {
+      "get": {
+        "operationId": "listWithdrawalRequests",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user/bank_account/withdrawal_requests/contract_51005437f4734be5b7e3a548b4fa7d0e\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Withdraw"
+        ],
+        "summary": "List Withdrawal Requests",
+        "description": "This API will be used to get a list of the last 10 withdrawal requests.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_51005437f4734be5b7e3a548b4fa7d0e",
+                  "idempotency_id": "Order_1234",
+                  "type": "Sobatku/withdrawal on behalf",
+                  "status": "pending",
+                  "amount": "120000.0",
+                  "fees": "0.0",
+                  "account_no": "1680366060",
+                  "bank_abbrev": "BCA",
+                  "express": true,
+                  "value_date": null,
+                  "failure_reason": null,
+                  "created_at": "2018-11-06T10:43:29+07:00"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/banks": {
+      "get": {
+        "operationId": "getBankAbbrev",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/banks\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Bank Account"
+        ],
+        "summary": "Get Bank and Abbreviation Mapping",
+        "description": "This will provide you with a list of banks we support. Usually used for Add Bank Account API",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/securitySchemes/X-Hydefi-USER-API-KEY"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "name": "Development Bank of Singapore",
+                    "abbreviation": "DBS",
+                    "img_src": "/assets/bank-logo-dbs-d50c1eeac92967980cf421b7dd9b39fafb2620d9318e29cde5567dcdc1e77ff9.png",
+                    "bank_code": "7171",
+                    "swift_code": "DBSSSGSGXXX"
+                  },
+                  {
+                    "name": "United Overseas Bank",
+                    "abbreviation": "UOB",
+                    "img_src": "/assets/bank-logo-uob-f6cea3dfa157a1b7025807f435f46e05760aad46aab10442a2fc3fce698081e9.png",
+                    "bank_code": "7375",
+                    "swift_code": "UOVBSGSGXXX"
+                  },
+                  {
+                    "name": "Maybank Singapore Limited",
+                    "abbreviation": "MBB",
+                    "img_src": "/assets/bank-logo-mbb-8f7d6804d6065d0b23107b972e115e7c3dc3d7e987f8ddc4e8c72f300b423dc8.png",
+                    "bank_code": "7302",
+                    "swift_code": "MBBESGS2XXX"
+                  },
+                  {
+                    "name": "Oversea-Chinese Banking Corporation Limited",
+                    "abbreviation": "OCBC",
+                    "img_src": "/assets/bank-logo-ocbc-3184769e64db703387070eba3312fd6e70c072d0ebba67a2f9068fcf1b803aae.png",
+                    "bank_code": "7339",
+                    "swift_code": "OCBCSGSGXXX"
+                  },
+                  {
+                    "name": "Citibank Singapore",
+                    "abbreviation": "CITI",
+                    "img_src": "/assets/bank-logo-citi-1d6a98b78e9f2d55293425c833582f44470183a23c521500a92dc3a7cbdf2541.png",
+                    "bank_code": "7214",
+                    "swift_code": "CITISGSLXXX"
+                  },
+                  {
+                    "name": "Standard Chartered Bank",
+                    "abbreviation": "SCB",
+                    "img_src": "/assets/bank-logo-scb-919ef3a0983dba299d165158272385b6248a34bacaf3459f820b80aba94aed9c.png",
+                    "bank_code": "7144",
+                    "swift_code": "SCBLSG22XXX"
+                  },
+                  {
+                    "name": "Australia and New Zealand Bank Group",
+                    "abbreviation": "ANZ",
+                    "img_src": "/assets/bank-logo-anz-45f0648f29b2ad3c45b85cbb7ae207d5865eab38b6de9f9b682bf5c7e2175b86.png",
+                    "bank_code": "7931",
+                    "swift_code": "ANZBSGSXXXX"
+                  },
+                  {
+                    "name": "CIMB Bank Berhad",
+                    "abbreviation": "CIMB",
+                    "img_src": "/assets/bank-logo-cimb-faa48b64aa73a81c6bfaa258c961c5f6b4be538098aa56227e0fed151503c458.png",
+                    "bank_code": "7986",
+                    "swift_code": "CIBBSGSGXXX"
+                  },
+                  {
+                    "name": "Deutsche bank AG",
+                    "abbreviation": "DBAG",
+                    "img_src": null,
+                    "bank_code": "7463",
+                    "swift_code": "DEUTSGSGXXX"
+                  },
+                  {
+                    "name": "Far Eastern Bank Ltd",
+                    "abbreviation": "FEB",
+                    "img_src": null,
+                    "bank_code": "7199",
+                    "swift_code": "FAEASGSGXXX"
+                  },
+                  {
+                    "name": "HSBC (Corporate)",
+                    "abbreviation": "HSBC",
+                    "img_src": "/assets/bank-logo-hsbc-ce1446c71b6ff366f20ade4ff146e8c8717c0a1d49631d0ce87727cdfef77536.png",
+                    "bank_code": "7232",
+                    "swift_code": "HSBCSGSGXXX"
+                  },
+                  {
+                    "name": "HSBC (Personal)",
+                    "abbreviation": "HSBC2",
+                    "img_src": "/assets/bank-logo-hsbc-ce1446c71b6ff366f20ade4ff146e8c8717c0a1d49631d0ce87727cdfef77536.png",
+                    "bank_code": "7232",
+                    "swift_code": "HSBCSGS2XXX"
+                  },
+                  {
+                    "name": "RHB Bank Berhad",
+                    "abbreviation": "RHB",
+                    "img_src": null,
+                    "bank_code": "7366",
+                    "swift_code": "RHBBSGSGXXX"
+                  },
+                  {
+                    "name": "Sumitomo Mitsui Banking Corporation",
+                    "abbreviation": "SMBC",
+                    "img_src": null,
+                    "bank_code": "7472",
+                    "swift_code": "SMBCSGSGXXX"
+                  },
+                  {
+                    "name": "The Royal Bank of Scotland N.V",
+                    "abbreviation": "RBS",
+                    "img_src": null,
+                    "bank_code": "7010",
+                    "swift_code": "ABNASGSGXXX"
+                  },
+                  {
+                    "name": "POSB",
+                    "abbreviation": "POSB",
+                    "img_src": "/assets/bank-logo-posb-f9657e301f424e554b55171fc8ca63843678a7997eee70d52fe3da6b3ece84c4.png",
+                    "bank_code": "7171",
+                    "swift_code": "DBSSSGSGXXX"
+                  },
+                  {
+                    "name": "Bank of China",
+                    "abbreviation": "BOC",
+                    "img_src": "/assets/bank-logo-boc-f3dd0f37d867baff9fac012546fcc76c3c015ffc524ef83a234709cfc91d77c6.png",
+                    "bank_code": "7083",
+                    "swift_code": "BKCHSGSGXXX"
+                  },
+                  {
+                    "name": "Bank of Tokyo-Mitsubshi UFJ",
+                    "abbreviation": "MUFG",
+                    "img_src": null,
+                    "bank_code": "7126",
+                    "swift_code": "BOTKSGSXXXX"
+                  },
+                  {
+                    "name": "BNP PARIBAS",
+                    "abbreviation": "BNP",
+                    "img_src": null,
+                    "bank_code": "7418",
+                    "swift_code": "BNPASGSGXXX"
+                  },
+                  {
+                    "name": "HL BANK",
+                    "abbreviation": "HLB",
+                    "img_src": null,
+                    "bank_code": "7287",
+                    "swift_code": "HLBBSGSGXXX"
+                  },
+                  {
+                    "name": "Mizuho Bank",
+                    "abbreviation": "MIZ",
+                    "img_src": null,
+                    "bank_code": "7621",
+                    "swift_code": "MHCBSGSGXXX"
+                  },
+                  {
+                    "name": "BANK OF EAST ASIA LTD",
+                    "abbreviation": "BEA",
+                    "img_src": null,
+                    "bank_code": "7092",
+                    "swift_code": "BEASSGSGXXX"
+                  }
+                ]
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/notify_withdrawal_callback": {
+      "post": {
+        "operationId": "withdrawalNotificationCallback",
+        "description": "This is Hydefi's callback request to your server to notify withdrawl status",
+        "summary": "Withdrawal Notification Callback",
+        "tags": [
+          "Withdraw"
+        ],
+        "security": [],
+        "servers": [
+          {
+            "url": "https://yourserver.com",
+            "description": "This is your endpoint you set in the dashboard or notify_url"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "account_no": {
+                    "description": "bank account no of withdrawal",
+                    "type": "string",
+                    "example": "0393123432"
+                  },
+                  "amount": {
+                    "description": "withdrawal amount",
+                    "type": "string",
+                    "example": "125000"
+                  },
+                  "bank_abbrev": {
+                    "description": "bank abbreviation of withdrawal",
+                    "type": "string",
+                    "example": "DBS"
+                  },
+                  "fees": {
+                    "description": "Withdrawal Fee",
+                    "type": "string",
+                    "example": "0"
+                  },
+                  "id": {
+                    "description": "Hydefi Generated Unique Key",
+                    "type": "string",
+                    "example": "contract_dd5a6b83"
+                  },
+                  "idempotency_id": {
+                    "description": "The key you put in the withdrawal request",
+                    "type": "string",
+                    "example": "AZ0001"
+                  },
+                  "status": {
+                    "description": "Status of transaction",
+                    "type": "string",
+                    "enum": [
+                      "completed",
+                      "failed"
+                    ],
+                    "example": "completed"
+                  },
+                  "value_date": {
+                    "format": "YYYY-MM-DD",
+                    "description": "Date of withdrawal completed as provided by partner bank. will only available for \"completed\" status",
+                    "type": "string",
+                    "example": "2018-09-12"
+                  },
+                  "failure_reason": {
+                    "description": "Reason of failed. Will only available for \"failed\" status",
+                    "type": "string",
+                    "example": "Sample Error Message - Request cannot be processed"
+                  },
+                  "express": {
+                    "description": "Express/normal withdrawal",
+                    "type": "string",
+                    "example": "true"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Your server returns this code if it accepts the callback"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account/withdrawal_requests/{withdrawal_request_id}": {
+      "get": {
+        "operationId": "getWithdrawal",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/user/bank_account/withdrawal_requests/contract_51005437f4734be5b7e3a548b4fa7d0e\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "Withdraw"
+        ],
+        "summary": "Get Withdrawal Request",
+        "description": "This API will be used to get the current status of withdrawal request.\nIt is useful if you want to check with Hydefi again about the status of your withdrawal request in case there is something wrong with the callback of the withdrawal request status.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "withdrawal_request_id",
+            "in": "path",
+            "description": "The ID of the withdrawal you want to get information of. You can retrieve this information from the ",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "175"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_51005437f4734be5b7e3a548b4fa7d0e",
+                  "idempotency_id": "Order_1234",
+                  "type": "Sobatku/withdrawal on behalf",
+                  "status": "pending",
+                  "amount": "120000.0",
+                  "fees": "0.0",
+                  "account_no": "1680366060",
+                  "bank_abbrev": "BCA",
+                  "express": true,
+                  "value_date": null,
+                  "failure_reason": null,
+                  "created_at": "2018-11-06T10:43:29+07:00"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/authorize/hello": {
+      "get": {
+        "tags": [
+          "Testing"
+        ],
+        "servers": [
+          {
+            "description": "Singapore Sandbox for testing",
+            "url": "https://sandbox.hydefi.io/merchant"
+          }
+        ],
+        "operationId": "authorizeHello",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/authorize/hello\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "summary": "Check Connection",
+        "description": "Use this endpoint to check connection with our server",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "Hello world"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/authorize/get_mock_otp": {
+      "get": {
+        "tags": [
+          "Testing"
+        ],
+        "servers": [
+          {
+            "description": "Singapore Sandbox for testing",
+            "url": "https://sandbox.hydefi.io/merchant"
+          }
+        ],
+        "operationId": "getMockOtp",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v3/authorize/get_mock_otp?phone_no=%252B6287785725657\" \\\r\n  --header \"X-Hydefi-APP-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "summary": "Get Mock OTP",
+        "description": "Get a mock OTP. This is only usable in sandbox environment",
+        "security": [
+          {
+            "X-Hydefi-APP-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone_no",
+            "in": "query",
+            "description": "Phone Number. For international number, you can use ’%2B’ to replace the plus(’+’) sign. (i.e. use %2B6287785725657 instead of +6287785725657)",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "otp": "138558"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/bank_account/withdrawal_requests/mock_result": {
+      "put": {
+        "operationId": "mockWithdrawalResult",
+        "tags": [
+          "Testing"
+        ],
+        "servers": [
+          {
+            "description": "Singapore Sandbox for testing",
+            "url": "https://sandbox.hydefi.io/merchant"
+          }
+        ],
+        "summary": "Mock Withdrawal Result",
+        "description": "You need to wait for a few seconds after withdrawal creation to run this API. Currently only available in Indonesia",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request PUT \"$BASE_URL/v3/user/bank_account/withdrawal_requests/mock_result\" \\\r\n  --header \"Content-Type: application/json\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --form \"idempotency_id=Order_1234\" \\\r\n  --form \"status=completed\""
+          }
+        ],
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "status",
+                  "idempotency_id"
+                ],
+                "properties": {
+                  "idempotency_id": {
+                    "type": "string",
+                    "description": "Idempotency ID you use to create your withdrawal request"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "completed",
+                      "failed"
+                    ],
+                    "description": "desired status for withdrawal"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "available_balance": 308446,
+                  "ledger_balance": 308446,
+                  "withdrawal_request": {
+                    "id": "contract_78a3e9bbae474e5ab6fffad8e609f716",
+                    "idempotency_id": "Order_1234",
+                    "type": "Sobatku/withdrawal",
+                    "status": "completed",
+                    "amount": "120000.0",
+                    "fees": "0.0",
+                    "account_no": "1680366060",
+                    "bank_abbrev": "BCA",
+                    "express": true,
+                    "value_date": null,
+                    "created_at": "2018-11-01T17:48:42+07:00"
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/user/direct_bank_transfer_payments": {
+      "post": {
+        "operationId": "createDirectBankTransferPayment",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v3/user/direct_bank_transfer_payments\" \\\r\n  --header \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\" \\\r\n  --form \"amount=3000.00\" \\\r\n  --form \"external_id=foo_bar_123\""
+          }
+        ],
+        "tags": [
+          "Direct Bank Transfer Payments"
+        ],
+        "summary": "Create Direct Bank Transfer Payment",
+        "description": "The following API will allow you to make a Direct Bank Transfer Payment request. Using Direct Bank Transfer has the advantage of having higher transaction limits as compared to normal Charge which uses your wallet balance (`/charges`). The API token used in `X-Hydefi-USER-API-KEY` header should be your customer's API token.\r\n \r\nMerchants need to create a Direct Bank Transfer Payment request first. After receiving successful response from above API, please follow instruction in http://docs.Hydefi.io/Singapore#operation/getTransferInfo to get bank account details.",
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "servers": [
+          {
+            "description": "Singapore Production",
+            "url": "https://api.hydefi.io/merchant"
+          },
+          {
+            "description": "Singapore Sandbox for testing",
+            "url": "https://sandbox.hydefi.io/merchant"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "amount",
+                  "external_id"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Transaction Amount."
+                  },
+                  "external_id": {
+                    "type": "string",
+                    "description": "Unique ref no provided by you to prevent double charging, this cannot be repeated."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Payment Description."
+                  },
+                  "callback_url": {
+                    "type": "string",
+                    "description": "If specified, Hydefi will do an API call to your callback url once payment is completed. Please refer to the callback payload example."
+                  }
+                }
+              },
+              "examples": {
+                "Request Body Example": {
+                  "summary": "Request Body Example",
+                  "value": {
+                    "amount": 500,
+                    "external_id": "abc_xy1",
+                    "description": "any description for payment",
+                    "callback_url": "https://wwww.example.com/callbacks"
+                  }
+                },
+                "Callback Payload": {
+                  "summary": "Callback Payload",
+                  "value": {
+                    "id": "contract_c211dfac6f0d46ac829efd008de9b7e8",
+                    "idempotency_id": "940c3560-60bb-43f0-9f4a-5b161b11bf57",
+                    "type": "Direct bank transfer",
+                    "status": "completed",
+                    "amount": "29.61",
+                    "fees": "0.0",
+                    "created_at": "2020-01-07T12:44:54+08:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "contract_c184633a1d3d4d1aa6b49810795f6a65",
+                  "object": "DirectBankTransferContract",
+                  "status": "processing",
+                  "amount": "500.0",
+                  "total_amount": "500.0",
+                  "currency": "sgd",
+                  "notify_url": "https://wwww.example.com/callbacks",
+                  "wallet_name": "Digital Goods",
+                  "order_id": "abc_xy1",
+                  "description": "any description for payment",
+                  "receipt_email": "antonio@coinbase.com",
+                  "expiration_date": "2020-07-18T16:39:37+08:00",
+                  "metadata": {
+                    "callback_url": "https://wwww.example.com/callbacks"
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/intents": {
+      "post": {
+        "operationId": "createIntent",
+        "tags": [
+          "Intents"
+        ],
+        "summary": "Create an Intent",
+        "description": "The following request will allow you to create a intent for a transfer and register a callback notification once a transfer has be received or expired(all intents expires in 72 hours.)\r\n\r\nUser should be prompted to transfer  `unique_amount`  amount to the  `bank_account_no`  and  `bank_name`provided. Once the user deposits with  `unique_amount`, the full amount will be credited to his account.",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/intents\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\"\r\n -H \"Content-Type: application/json\" \\\r\n  -d '{ \"amount\": \"5000\", \"currency\": \"SGD\", \"bank\": \"BCA\", \"request_id\" : \"AZ0001\", \"notify_url\" : \"https://mysite.com/topup_notification\"}'"
+          }
+        ],
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "amount",
+                  "currency",
+                  "request_id"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Amount that user intends to transfer",
+                    "example": "5000"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "3-letter ISO code for currency(IDR/SGD)"
+                  },
+                  "request_id": {
+                    "type": "string",
+                    "description": "Unique ref no provided by requester. This will need to be unique or the intent request will be considered a duplicate and ignored.",
+                    "example": "AZ0001"
+                  },
+                  "bank": {
+                    "type": "string",
+                    "description": "bank abbreviation (BCA, UOB, MANDIRI)",
+                    "example": "BCA"
+                  },
+                  "notify_url": {
+                    "type": "string",
+                    "description": "URL to receive callback notifications when transfer is received",
+                    "example": "https://mysite.com/payment_notification"
+                  },
+                  "disable_va": {
+                    "type": "boolean",
+                    "description": "If true, does not return a Virtual Account for this intent",
+                    "default": "false"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "a975f036cb4b43f3b2d1ff90040ec292",
+                  "request_id": "AI1001",
+                  "amount": "30000.0",
+                  "currency": "IDR",
+                  "unique_amount": "29999",
+                  "bank_abbrev": "MANDIRI",
+                  "bank_name": "Bank Mandiri",
+                  "account_name": "PT Media Indonusa",
+                  "bank_account_no": "8855845678901235",
+                  "notify_url": "https://mysite.com/topup_notification",
+                  "expiration_date": "2017-06-01T07:46:40Z",
+                  "status": "pending",
+                  "transfer_info_array": [
+                    {
+                      "bank_name_full": "Bank Central Asia",
+                      "bank_name_abbreviation": "BCA",
+                      "bank_account_no": "1063003003",
+                      "bank_code": "",
+                      "branch_code": "",
+                      "branch_area": "",
+                      "unique_id": "97266867",
+                      "img_src": "https://www.Hydefi.io/images/bankLogos/bank-logo-bca.png"
+                    },
+                    {
+                      "bank_name_full": "Bank Mandiri",
+                      "bank_name_abbreviation": "MANDIRI",
+                      "bank_account_no": "8855845678901235",
+                      "bank_code": "",
+                      "branch_code": "",
+                      "branch_area": "",
+                      "unique_id": "97266867",
+                      "img_src": "https://www.Hydefi.io/images/bankLogos/bank-logo-mandiri.png"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listIntent",
+        "tags": [
+          "Intents"
+        ],
+        "summary": "List Current Intent",
+        "description": "Returns the current pending intent of the user. If multiple intents are created, only the last one is returned.\r\n\r\n`transfer_info_array`  is returned so you can display a list of all Hydefi banks to transfer to.",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/intents\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\""
+          }
+        ],
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "disable_va",
+            "in": "query",
+            "description": "If true, does not return a Virtual Account for intent",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "a975f036cb4b43f3b2d1ff90040ec292",
+                  "request_id": "AI1001",
+                  "amount": "30000.0",
+                  "currency": "IDR",
+                  "unique_amount": "29999",
+                  "bank_abbrev": "MANDIRI",
+                  "bank_name": "Bank Mandiri",
+                  "account_name": "PT Media Indonusa",
+                  "bank_account_no": "8855845678901235",
+                  "notify_url": "https://mysite.com/topup_notification",
+                  "expiration_date": "2017-06-01T07:46:40Z",
+                  "status": "pending",
+                  "transfer_info_array": [
+                    {
+                      "bank_name_full": "Bank Central Asia",
+                      "bank_name_abbreviation": "BCA",
+                      "bank_account_no": "1063003003",
+                      "bank_code": "",
+                      "branch_code": "",
+                      "branch_area": "",
+                      "unique_id": "97266867",
+                      "img_src": "https://www.Hydefi.io/images/bankLogos/bank-logo-bca.png"
+                    },
+                    {
+                      "bank_name_full": "Bank Mandiri",
+                      "bank_name_abbreviation": "MANDIRI",
+                      "bank_account_no": "8855845678901235",
+                      "bank_code": "",
+                      "branch_code": "",
+                      "branch_area": "",
+                      "unique_id": "97266867",
+                      "img_src": "https://www.Hydefi.io/images/bankLogos/bank-logo-mandiri.png"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/intents/{intent_id}/cancel": {
+      "post": {
+        "operationId": "cancelIntent",
+        "tags": [
+          "Intents"
+        ],
+        "summary": "Cancel an Intent",
+        "description": "Cancelling an intent that has been previously created but not yet completed.",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl \"$BASE_URL/v3/intent/<INTENT_ID>/cancel\" \\\r\n  -H \"X-Hydefi-USER-API-KEY: $CUSTOMER_API_KEY\"\r\n  -X POST"
+          }
+        ],
+        "security": [
+          {
+            "X-Hydefi-USER-API-KEY": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "description": "Intent ID. You can get this from the create Intent response.",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6f5f85859a51cd08c8ae113412bb72c8",
+                  "request_id": "AZ0001",
+                  "amount": "5000",
+                  "currency": "IDR",
+                  "amount_to_transfer": "4999",
+                  "bank_name": "Bank Central Asia",
+                  "bank_abbrev": "BCA",
+                  "account_name": "Xveria Media Indonesia",
+                  "bank_account_no": "0124121241",
+                  "notify_url": "https://mysite.com/topup_notification",
+                  "expiration_date": "2016-09-09T17:55:51Z",
+                  "status": "pending"
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v3Error:4XX"
+          }
+        }
+      }
+    },
+    "/v3/notify_intent_callback": {
+      "post": {
+        "operationId": "notifyIntent",
+        "description": "After intent has been verified(transfer processed)/expired by Hydefi, Hydefi will send a callback to the `notify_url` you provided. This is a server to server HTTPS POST and you will need to acknowledge the callback by providing a HTTP 200 status.",
+        "summary": "Intent Notification Callback",
+        "tags": [
+          "Intents"
+        ],
+        "security": [],
+        "servers": [
+          {
+            "url": "http://yourserver.com",
+            "description": "This is your endpoint you set in the dashboard or notify_url"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "properties": {
+                  "intent_id": {
+                    "description": "Hydefi’ id unique to each intent",
+                    "type": "string",
+                    "example": "6f5f85859a51cd08c8ae113412bb72c8"
+                  },
+                  "request_id": {
+                    "description": "Unique ref number provided by your during your intent call",
+                    "type": "string",
+                    "example": "A012312"
+                  },
+                  "amount": {
+                    "description": "reason for verification status. Only applicable when verification_status is false",
+                    "type": "string",
+                    "example": "Amount that user intented to transfer."
+                  },
+                  "currency": {
+                    "description": "U3-letter ISO code for currency(IDR/SGD)",
+                    "type": "string"
+                  },
+                  "status": {
+                    "description": "Transfer status.",
+                    "type": "string",
+                    "enum": [
+                      "expired",
+                      "completed"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Your server returns this code if it accepts the callback"
+          }
+        }
+      }
+    },
+    "/v4/accounts": {
+      "get": {
+        "operationId": "getApiV4AccountsId",
+        "summary": "Get Account Info (Coming Soon)",
+        "description": "This API displays the account information, including the storage limits.",
+        "tags": [
+          "cutting_edge"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v4/accounts\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
+          }
+        ],
+        "security": [
+          {
+            "v4HydefiAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "style": "deepObject",
+            "in": "query",
+            "description": "Refer to https://jsonapi.org/format/#fetching-sparse-fieldsets",
+            "allowReserved": true,
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "example": {
+                "accounts": "balance,wallet_id,limitations"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/vnd.api+json": {
+                "examples": {
+                  "Limitation excluded": {
+                    "summary": "fields[accounts]=balance,currency,wallet_name",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "account_48831b3a93e84e9a8dac8a7e11f5659e",
+                          "type": "accounts",
+                          "attributes": {
+                            "balance": "150.00",
+                            "currency": "sgd",
+                            "wallet_name": "Digital Goods Wallet"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "Limitations included": {
+                    "summary": "fields[accounts]=limitations",
+                    "value": {
+                      "data": [
+                        {
+                          "id": "account_48831b3a93e84e9a8dac8a7e11f5659e",
+                          "type": "accounts",
+                          "attributes": {
+                            "limitations": {
+                              "credit_card_daily": {
+                                "used": 1200,
+                                "remaining": 800,
+                                "max": 2000
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/definitions/Accounts"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v4/direct_bank_transfer_payments": {
+      "post": {
+        "operationId": "createDirectBankTransferPayment",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request POST \"$BASE_URL/v4/direct_bank_transfer_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\" \\\r\n  --form \"amount=100\" \\\r\n  --form \"external_id=ref_20200101_0001\" \\\r\n  --form \"source_bank_account_id=12345\""
+          }
+        ],
+        "tags": [
+          "cutting_edge"
+        ],
+        "summary": "Create Direct Bank Transfer Payment (Coming Soon)",
+        "description": "The following API will allow you to make a Direct Bank Transfer Payment. Using Direct Bank Transfer has the advantage of having higher transaction limits as compared to normal Charge which uses your wallet balance (`/charges`). The API token used in Authorization header should be your customer's API token.\n\n In the response, you will have information about the bank account to top up to. Show this information to your customer for them to make a bank transfer. They need to put the `unique_topup_identifier` in the comments field when doing a bank transfer for Hydefi to identify that their transfer is for this transaction.",
+        "security": [
+          {
+            "v4HydefiAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "description": "Amount for doing the payment",
+            "schema": {
+              "type": "float"
+            },
+            "example": 100,
+            "required": true
+          },
+          {
+            "name": "external_id",
+            "in": "query",
+            "description": "The merchant's reference id",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ref_20200101_0001",
+            "required": true
+          },
+          {
+            "name": "callback_url",
+            "in": "query",
+            "description": "Merchant's callback url for sending notification after payment success",
+            "schema": {
+              "type": "string"
+            },
+            "example": "http://your-callback-url",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "data": {
+                    "id": "contract_9b562994c4274d9993ba93c94619a8f6",
+                    "type": "direct_bank_transfer_payments",
+                    "attributes": {
+                      "amount": "3000.00",
+                      "external_id": "ref_20200101_0001",
+                      "status": "processing",
+                      "created_at": "2020-01-02T15:33:45+08:00"
+                    }
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/definitions/DirectBankTransferContract"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v4Error:4XX"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listDirectBankTransferPayments",
+        "x-code-samples": [
+          {
+            "lang": "Shell",
+            "source": "curl --location --request GET \"$BASE_URL/v4/inter_wallet_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
+          }
+        ],
+        "tags": [
+          "cutting_edge"
+        ],
+        "summary": "List Direct Bank Transfer Payments (Coming Soon)",
+        "description": "Retrive a previously created direct bank transfer payment. You can use this to check the status, whether it has been completed or still processing. The API token used in Authorization header should be your customer's API token.",
+        "security": [
+          {
+            "v4HydefiAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/vnd.api+json": {
+                "example": {
+                  "data": [
+                    {
+                      "id": "contract_9b562994c4274d9993ba93c94619a8f6",
+                      "type": "direct_bank_transfer_payments",
+                      "attributes": {
+                        "amount": "3000.00",
+                        "external_id": "ref_20200101_0001",
+                        "status": "completed",
+                        "created_at": "2019-04-12T07:10:50Z"
+                      }
+                    }
+                  ]
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/definitions/DirectBankTransferContract"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/v4Error:4XX"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "definitions": {
+      "Accounts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Entity's unique identifier in Hydefi"
+            },
+            "type": {
+              "type": "string",
+              "description": "Entity's type"
+            },
+            "attributes": {
+              "type": "object",
+              "description": "Entity's attributes",
+              "properties": {
+                "balance": {
+                  "type": "string"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "wallet_name": {
+                  "type": "string"
+                },
+                "wallet_id": {
+                  "type": "integer"
+                },
+                "limitations": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DirectBankTransferContract": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Entity's unique identifier in Hydefi"
+          },
+          "type": {
+            "type": "string",
+            "description": "Entity's type"
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Entity's attributes",
+            "properties": {
+              "amount": {
+                "type": "float"
+              },
+              "status": {
+                "type": "string"
+              },
+              "external_id": {
+                "type": "string"
+              },
+              "created_at": {
+                "type": "string",
+                "description": "Time ISO8601"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "X-Hydefi-APP-API-KEY": {
+        "name": "X-Hydefi-APP-API-KEY",
+        "in": "header",
+        "description": "Retrive this API key from the dashboard",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "X-Hydefi-USER-API-KEY": {
+        "name": "X-Hydefi-USER-API-KEY",
+        "in": "header",
+        "description": "Retrive this API key from the dashboard",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "user-api-token": {
+        "name": "X-Hydefi-USER-API-KEY",
+        "in": "header",
+        "description": "This is your user's api token. You can retrieve this from the Get Token API.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "examples": {
+      "create_loan": {
+        "value": {
+          "customer_data": {
+            "din": "string content",
+            "custtype": 1,
+            "fullname": "name01",
+            "custname": "name01",
+            "title": "sh",
+            "custaddress": "string content",
+            "custrt": "string content",
+            "custrw": "string content",
+            "custkel": "string content",
+            "custkec": "string content",
+            "custcity": "string content",
+            "custprov": "string content",
+            "custzip": "string content",
+            "custdati": "0102",
+            "idtype": 1,
+            "idnumber": "idnumber",
+            "idexpired": "2019-01-01",
+            "gender": 1,
+            "maritalstatus": 2,
+            "birthdate": "1980-01-04",
+            "birthplace": "bekasi",
+            "birthdati": "0102",
+            "worksince": "2014-01-01",
+            "employeests": 1,
+            "contractend": "2014-01-01",
+            "lasteducation": "0100",
+            "economycode": "011110",
+            "debiturcode": "907",
+            "mmn": "ibu kandung",
+            "npwp": "no npwp",
+            "homestatus": 1,
+            "livedsince": "2000-01-01",
+            "phonearea": "area",
+            "phoneno": "12323535",
+            "mobileno": "0878978979",
+            "dependent": 0,
+            "grossincome": 5000000,
+            "expenses": 1000000,
+            "sameidhomeaddr": 1,
+            "custaddresshome": "string content",
+            "custrthome": "string content",
+            "custrwhome": "string content",
+            "custkelhome": "string content",
+            "custkechome": "string content",
+            "custcityhome": "string content",
+            "custprovhome": "string content",
+            "custziphome": "string content",
+            "custdatihome": "0102",
+            "spousename": "string content",
+            "spousebirthdate": "1980-01-01",
+            "spousebirthplace": "string content",
+            "spouseidtype": 1,
+            "spouseidnumber": "string content",
+            "spousephoneno": "string content",
+            "spousemobileno": "string content",
+            "spouseoffice": "string content",
+            "spouseoffinephone": "string content",
+            "relativestype": 1,
+            "relativesname": "string content",
+            "custaddressrel": "string content",
+            "custrtrel": "string content",
+            "custrwrel": "string content",
+            "custkelrel": "string content",
+            "custkecrel": "string content",
+            "custcityrel": "string content",
+            "custprovrel": "string content",
+            "custziprel": "string content",
+            "phonenorel": "string content",
+            "companyname": "string content",
+            "companyaddr": "string content",
+            "companycity": "string content",
+            "companyzip": "string content",
+            "companyphone": "string content",
+            "deedno": "string content",
+            "deeddate": "2019-01-01",
+            "corporatetype": "string content",
+            "jobid": "002",
+            "jobtitleid": "50",
+            "countryid": "id",
+            "branchcode": "000"
+          },
+          "loan_data": {
+            "refno": "ref11",
+            "objectvalue": "10000000.0",
+            "principaltotal": "1000000.0",
+            "tenor": "1",
+            "loantype": 0,
+            "effectiverate": "12.0",
+            "installment": "1000000.0",
+            "firstinstdate": "2018-11-01",
+            "admfee": "0.0",
+            "inscode": "001",
+            "inspremi": "0.0",
+            "insonloan": "0.0",
+            "installmenttype": 1,
+            "branchcode": "000",
+            "typeofuseid": "89",
+            "orientationofuseid": "9",
+            "debiturcatid": "10",
+            "portfoliocatid": "string content",
+            "credittypeid": "20",
+            "creditattributeid": "20",
+            "creditcategoryid": "10",
+            "fincat": "000",
+            "installfeeaccount": "50000.0"
+          },
+          "collateral_data": {
+            "productcode": "C304",
+            "merkcode": "mrk",
+            "modelcode": "mdl",
+            "collateralno": "collno939854",
+            "collateraldate": "2018-01-01",
+            "collateraladdress": "string content",
+            "collateralcityid": "0102",
+            "collateralname": "collname",
+            "collateralownerid": "collid935790",
+            "collateraldesctype": "string content",
+            "engineno": "string content",
+            "chassisno": "string content",
+            "collateralyear": 2018,
+            "buildyear": 2018,
+            "condition": 1,
+            "color": "string content",
+            "collateralkind": "KTA01",
+            "collateralpurpose": "string content",
+            "policeno": "string",
+            "stnkexpired": "2030-01-01",
+            "surveydate": "2018-01-01",
+            "bindtypecode": "99",
+            "collateraltypecode": "250",
+            "sbrankcode": "string content",
+            "collateralvalue": 100000000,
+            "dealercode": "TK"
+          },
+          "installment_data": {
+            "period": "1.0",
+            "duedate": "2018-12-12",
+            "principal": "1000000.0",
+            "interest": "10000000.0",
+            "installfee": "50000.0"
+          }
+        }
+      },
+      "XFE1": {
+        "summary": "XFE1 - Server busy",
+        "value": {
+          "error": "string",
+          "error_code": "XFE1",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE2": {
+        "summary": "XFE2 - Access denied",
+        "value": {
+          "error": "string",
+          "error_code": "XFE2",
+          "error_handling": "Make sure you call the correct API or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE3": {
+        "summary": "XFE3 - Internal Error",
+        "value": {
+          "error": "string",
+          "error_code": "XFE3",
+          "error_handling": "Unexpected error. Try again later or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE4": {
+        "summary": "XFE4 - Authentication field empty",
+        "value": {
+          "error": "string",
+          "error_code": "XFE4",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE5": {
+        "summary": "XFE5 - Api key is invalid",
+        "value": {
+          "error": "string",
+          "error_code": "XFE5",
+          "error_handling": "Make sure you entered the correct API key or contact customer support at https://bit.ly/HydefiSupport"
+        }
+      },
+      "XFE6": {
+        "summary": "XFE6 - Invalid signature",
+        "value": {
+          "error": "string",
+          "error_code": "XFE6",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE7": {
+        "summary": "XFE7 - Database error",
+        "value": {
+          "error": "string",
+          "error_code": "XFE7",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE8": {
+        "summary": "XFE8 - Cannot retrieve media",
+        "value": {
+          "error": "string",
+          "error_code": "XFE8",
+          "error_handling": "Cannot retrieve media. Please enter a new URL or try again later."
+        }
+      },
+      "XFE9": {
+        "summary": "XFE9 - ....",
+        "value": {
+          "error": "string",
+          "error_code": "XFE9",
+          "error_handling": "..."
+        }
+      },
+      "XFE10": {
+        "summary": "XFE10 - Invalid environment",
+        "value": {
+          "error": "string",
+          "error_code": "XFE10",
+          "error_handling": "Request not supported for this environment."
+        }
+      },
+      "XFE11": {
+        "summary": "XFE11 - Timeout",
+        "value": {
+          "error": "string",
+          "error_code": "XFE11",
+          "error_handling": "Please try again later."
+        }
+      },
+      "XFE12": {
+        "summary": "XFE12 - Invalid parameter",
+        "value": {
+          "error": "string",
+          "error_code": "XFE12",
+          "error_handling": "Make sure you entered the correct parameters."
+        }
+      },
+      "XFE13": {
+        "summary": "XFE13 - Record not found",
+        "value": {
+          "error": "string",
+          "error_code": "XFE13",
+          "error_handling": "Please check that you provided the correct API Key and the correct parameters."
+        }
+      },
+      "XFE14": {
+        "summary": "XFE14 - API only allowed for fully verified user",
+        "value": {
+          "error": "string",
+          "error_code": "XFE14",
+          "error_handling": "Please submit KYC data to get your account fully verified."
+        }
+      },
+      "XFE15": {
+        "summary": "XFE15 - Required parameter empty",
+        "value": {
+          "error": "string",
+          "error_code": "XFE15",
+          "error_handling": "Make sure you entered the correct required parameter."
+        }
+      },
+      "XFE16": {
+        "summary": "XFE16 - Invalid request",
+        "value": {
+          "error": "string",
+          "error_code": "XFE16",
+          "error_handling": "API request not supported. Make sure you entered the correct API key or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE101": {
+        "summary": "XFE101 - Not local number",
+        "value": {
+          "error": "string",
+          "error_code": "XFE101",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE102": {
+        "summary": "XFE102 - Entered value is less than minimum",
+        "value": {
+          "error": "string",
+          "error_code": "XFE102",
+          "error_handling": "Make sure you entered the correct number."
+        }
+      },
+      "XFE103": {
+        "summary": "XFE103 - ...",
+        "value": {
+          "error": "string",
+          "error_code": "XFE103",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE104": {
+        "summary": "XFE104 - Media provided too large",
+        "value": {
+          "error": "string",
+          "error_code": "XFE104",
+          "error_handling": "Media too big. Follow the guidelines in the response."
+        }
+      },
+      "XFE105": {
+        "summary": "XFE105 - Captcha error",
+        "value": {
+          "error": "string",
+          "error_code": "XFE1",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE106": {
+        "summary": "XFE106 - No auth_code provided",
+        "value": {
+          "error": "string",
+          "error_code": "XFE106",
+          "error_handling": "Enter either phone OTP or Google Auth OTP"
+        }
+      },
+      "XFE107": {
+        "summary": "XFE107 - Only enter one auth_code",
+        "value": {
+          "error": "string",
+          "error_code": "XFE107",
+          "error_handling": "Do not enter both OTP or Google Auth OTP. Only need to enter one."
+        }
+      },
+      "XFE108": {
+        "summary": "XFE108 - More user information required",
+        "value": {
+          "error": "string",
+          "error_code": "XFE108",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE109": {
+        "summary": "XFE109 - Invalid credentials",
+        "value": {
+          "error": "string",
+          "error_code": "XFE109",
+          "error_handling": "Make sure you entered the correct credentials."
+        }
+      },
+      "XFE110": {
+        "summary": "XFE110 - Cannot sign up twice",
+        "value": {
+          "error": "string",
+          "error_code": "XFE110",
+          "error_handling": "Please sign in instead"
+        }
+      },
+      "XFE111": {
+        "summary": "XFE1 - Duplicate credentials",
+        "value": {
+          "error": "string",
+          "error_code": "XFE111",
+          "error_handling": "Particulars already exist. Please make sure you entered the correct parameters."
+        }
+      },
+      "XFE112": {
+        "summary": "XFE112 - Repeat request",
+        "value": {
+          "error": "string",
+          "error_code": "XFE112",
+          "error_handling": "API request has already been made. Please follow the instructions in the response or call aother API."
+        }
+      },
+      "XFE201": {
+        "summary": "XFE201 - Not yet a merchant",
+        "value": {
+          "error": "string",
+          "error_code": "XFE201",
+          "error_handling": "Please verify your merchant or business account."
+        }
+      },
+      "XFE301": {
+        "summary": "XFE301 - Account locked",
+        "value": {
+          "error": "string",
+          "error_code": "XFE301",
+          "error_handling": "Request not available. Please contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE302": {
+        "summary": "XFE302 - Account deleted",
+        "value": {
+          "error": "string",
+          "error_code": "XFE302",
+          "error_handling": "Request not available. Please contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE303": {
+        "summary": "XFE303 - Account terminated",
+        "value": {
+          "error": "string",
+          "error_code": "XFE303",
+          "error_handling": "Request not available. Please contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE304": {
+        "summary": "XFE304- Account closed",
+        "value": {
+          "error": "string",
+          "error_code": "XFE304",
+          "error_handling": "Request not available. Please contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE305": {
+        "summary": "XFE305 - ....",
+        "value": {
+          "error": "string",
+          "error_code": "XFE305",
+          "error_handling": "..."
+        }
+      },
+      "XFE306": {
+        "summary": "XFE306 - ...",
+        "value": {
+          "error": "string",
+          "error_code": "XFE306",
+          "error_handling": "..."
+        }
+      },
+      "XFE307": {
+        "summary": "XFE307 - ...",
+        "value": {
+          "error": "string",
+          "error_code": "XFE307",
+          "error_handling": "..."
+        }
+      },
+      "XFE308": {
+        "summary": "XFE308 - ...",
+        "value": {
+          "error": "string",
+          "error_code": "XFE308",
+          "error_handling": "..."
+        }
+      },
+      "XFE309": {
+        "summary": "XFE309 - Cannot use same account",
+        "value": {
+          "error": "string",
+          "error_code": "XFE309",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE310": {
+        "summary": "XFE310 - Cannot use same account",
+        "value": {
+          "error": "string",
+          "error_code": "XFE310",
+          "error_handling": "Follow instructions in the response."
+        }
+      },
+      "XFE311": {
+        "summary": "XFE311 - Cannot be different wallet type",
+        "value": {
+          "error": "string",
+          "error_code": "XFE311",
+          "error_handling": "Follow instruction in response or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE312": {
+        "summary": "XFE312 - Conditions not met to close account",
+        "value": {
+          "error": "string",
+          "error_code": "XFE312",
+          "error_handling": "Invalid request to close account. Follow instruction in the response."
+        }
+      },
+      "XFE401": {
+        "summary": "XFE401 - Cannot refund charge",
+        "value": {
+          "error": "string",
+          "error_code": "XFE401",
+          "error_handling": "Invalid request. Please call another API or Contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE402": {
+        "summary": "XFE402 - Cannot use placeholder account",
+        "value": {
+          "error": "string",
+          "error_code": "XFE402",
+          "error_handling": "Follow instructions in response."
+        }
+      },
+      "XFE403": {
+        "summary": "XFE403 - ...",
+        "value": {
+          "error": "string",
+          "error_code": "XFE403",
+          "error_handling": "..."
+        }
+      },
+      "XFE404": {
+        "summary": "XFE404 - Forex not supported",
+        "value": {
+          "error": "string",
+          "error_code": "XFE404",
+          "error_handling": "Make sure you call the correct API or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE405": {
+        "summary": "XFE405 - Charge cannot be refunded",
+        "value": {
+          "error": "string",
+          "error_code": "XFE405",
+          "error_handling": "Only completed contract can be refunded."
+        }
+      },
+      "XFE406": {
+        "summary": "XFE406 - Cannot refund prepaid transaction",
+        "value": {
+          "error": "string",
+          "error_code": "XFE406",
+          "error_handling": "Please choose another transaction to refund."
+        }
+      },
+      "XFE407": {
+        "summary": "XFE407 - Conditions to charge card not met",
+        "value": {
+          "error": "string",
+          "error_code": "XFE407",
+          "error_handling": "Invalid request for this transaction. Make sure you entered the correct txn_id."
+        }
+      },
+      "XFE408": {
+        "summary": "XFE408 - Invalid charge request",
+        "value": {
+          "error": "string",
+          "error_code": "XFE408",
+          "error_handling": "Invalid request. Please follow instructions in response or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE409": {
+        "summary": "XFE409 - Order id exist",
+        "value": {
+          "error": "string",
+          "error_code": "XFE409",
+          "error_handling": "Please enter another order_id."
+        }
+      },
+      "XFE410": {
+        "summary": "XFE410 - Invalid application fee",
+        "value": {
+          "error": "string",
+          "error_code": "XFE410",
+          "error_handling": "Invalid request. Please make changes to the parameters as stated in the response."
+        }
+      },
+      "XFE501": {
+        "summary": "XFE501 - Expected Bank API error",
+        "value": {
+          "error": "string",
+          "error_code": "XFE501",
+          "error_handling": "Try again later or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE502": {
+        "summary": "XFE502 - Unexpected BANK API error",
+        "value": {
+          "error": "string",
+          "error_code": "XFE502",
+          "error_handling": "Try again later or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      },
+      "XFE503": {
+        "summary": "XFE503 - Failed name check",
+        "value": {
+          "error": "string",
+          "error_code": "XFE503",
+          "error_handling": "Bank account name and name provided have to be similar."
+        }
+      },
+      "XFE504": {
+        "summary": "XFE504 - Maximum number of bank account",
+        "value": {
+          "error": "string",
+          "error_code": "XFE504",
+          "error_handling": "Delete existing bank accounts."
+        }
+      },
+      "XFE505": {
+        "summary": "XFE505 - Bank abbrev provided invalid",
+        "value": {
+          "error": "string",
+          "error_code": "XFE505",
+          "error_handling": "Use GET {{base-api-url}}api/v3/banks to get the correct bank abbrev."
+        }
+      },
+      "XFE506": {
+        "summary": "XFE506 - Bank account already taken",
+        "value": {
+          "error": "string",
+          "error_code": "XFE506",
+          "error_handling": "Please use another bank account."
+        }
+      },
+      "XFE601": {
+        "summary": "XFE601 - Conditions to withdraw not met. Can be solved by changing amount",
+        "value": {
+          "error": "string",
+          "error_code": "XFE601",
+          "error_handling": "Your withdrawal does not meet the conditions required. Please follow the instructions in the response."
+        }
+      },
+      "XFE602": {
+        "summary": "XFE602 - Server busy",
+        "value": {
+          "error": "string",
+          "error_code": "XFE602",
+          "error_handling": "Your withdrawal exceeds the limit for the time period. Please change the amount or verify your account."
+        }
+      },
+      "XFE603": {
+        "summary": "XFE603 - Not allowed to carry out request",
+        "value": {
+          "error": "string",
+          "error_code": "XFE603",
+          "error_handling": "Invalid request. Please call another API or contact customer support at https://bit.ly/HydefiSupport."
+        }
+      }
+    },
+    "responses": {
+      "v3Error:4XX": {
+        "description": "List of possible errors",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/error_response"
+            },
+            "examples": {
+              "XFE1": {
+                "$ref": "#/components/examples/XFE1"
+              },
+              "XFE2": {
+                "$ref": "#/components/examples/XFE2"
+              },
+              "XFE3": {
+                "$ref": "#/components/examples/XFE3"
+              },
+              "XFE4": {
+                "$ref": "#/components/examples/XFE4"
+              },
+              "XFE5": {
+                "$ref": "#/components/examples/XFE5"
+              },
+              "XFE6": {
+                "$ref": "#/components/examples/XFE6"
+              },
+              "XFE7": {
+                "$ref": "#/components/examples/XFE7"
+              },
+              "XFE8": {
+                "$ref": "#/components/examples/XFE8"
+              },
+              "XFE9": {
+                "$ref": "#/components/examples/XFE9"
+              },
+              "XFE10": {
+                "$ref": "#/components/examples/XFE10"
+              },
+              "XFE11": {
+                "$ref": "#/components/examples/XFE11"
+              },
+              "XFE12": {
+                "$ref": "#/components/examples/XFE12"
+              },
+              "XFE13": {
+                "$ref": "#/components/examples/XFE13"
+              },
+              "XFE14": {
+                "$ref": "#/components/examples/XFE14"
+              },
+              "XFE15": {
+                "$ref": "#/components/examples/XFE15"
+              },
+              "XFE16": {
+                "$ref": "#/components/examples/XFE16"
+              },
+              "XFE101": {
+                "$ref": "#/components/examples/XFE101"
+              },
+              "XFE102": {
+                "$ref": "#/components/examples/XFE102"
+              },
+              "XFE103": {
+                "$ref": "#/components/examples/XFE103"
+              },
+              "XFE104": {
+                "$ref": "#/components/examples/XFE104"
+              },
+              "XFE105": {
+                "$ref": "#/components/examples/XFE105"
+              },
+              "XFE106": {
+                "$ref": "#/components/examples/XFE106"
+              },
+              "XFE107": {
+                "$ref": "#/components/examples/XFE107"
+              },
+              "XFE108": {
+                "$ref": "#/components/examples/XFE108"
+              },
+              "XFE109": {
+                "$ref": "#/components/examples/XFE109"
+              },
+              "XFE110": {
+                "$ref": "#/components/examples/XFE110"
+              },
+              "XFE111": {
+                "$ref": "#/components/examples/XFE111"
+              },
+              "XFE112": {
+                "$ref": "#/components/examples/XFE112"
+              },
+              "XFE201": {
+                "$ref": "#/components/examples/XFE201"
+              },
+              "XFE301": {
+                "$ref": "#/components/examples/XFE301"
+              },
+              "XFE302": {
+                "$ref": "#/components/examples/XFE302"
+              },
+              "XFE303": {
+                "$ref": "#/components/examples/XFE303"
+              },
+              "XFE304": {
+                "$ref": "#/components/examples/XFE304"
+              },
+              "XFE305": {
+                "$ref": "#/components/examples/XFE305"
+              },
+              "XFE306": {
+                "$ref": "#/components/examples/XFE306"
+              },
+              "XFE307": {
+                "$ref": "#/components/examples/XFE307"
+              },
+              "XFE308": {
+                "$ref": "#/components/examples/XFE308"
+              },
+              "XFE309": {
+                "$ref": "#/components/examples/XFE309"
+              },
+              "XFE310": {
+                "$ref": "#/components/examples/XFE310"
+              },
+              "XFE311": {
+                "$ref": "#/components/examples/XFE311"
+              },
+              "XFE312": {
+                "$ref": "#/components/examples/XFE312"
+              },
+              "XFE401": {
+                "$ref": "#/components/examples/XFE401"
+              },
+              "XFE402": {
+                "$ref": "#/components/examples/XFE402"
+              },
+              "XFE403": {
+                "$ref": "#/components/examples/XFE403"
+              },
+              "XFE404": {
+                "$ref": "#/components/examples/XFE404"
+              },
+              "XFE405": {
+                "$ref": "#/components/examples/XFE405"
+              },
+              "XFE406": {
+                "$ref": "#/components/examples/XFE406"
+              },
+              "XFE407": {
+                "$ref": "#/components/examples/XFE407"
+              },
+              "XFE408": {
+                "$ref": "#/components/examples/XFE408"
+              },
+              "XFE409": {
+                "$ref": "#/components/examples/XFE409"
+              },
+              "XFE410": {
+                "$ref": "#/components/examples/XFE410"
+              },
+              "XFE501": {
+                "$ref": "#/components/examples/XFE501"
+              },
+              "XFE502": {
+                "$ref": "#/components/examples/XFE502"
+              },
+              "XFE503": {
+                "$ref": "#/components/examples/XFE503"
+              },
+              "XFE504": {
+                "$ref": "#/components/examples/XFE504"
+              },
+              "XFE505": {
+                "$ref": "#/components/examples/XFE505"
+              },
+              "XFE506": {
+                "$ref": "#/components/examples/XFE506"
+              },
+              "XFE601": {
+                "$ref": "#/components/examples/XFE601"
+              },
+              "XFE602": {
+                "$ref": "#/components/examples/XFE602"
+              },
+              "XFE603": {
+                "$ref": "#/components/examples/XFE603"
+              }
+            }
+          }
+        }
+      },
+      "v4Error:4XX": {
+        "content": {
+          "application/vnd.api+json": {
+            "schema": {
+              "$ref": "#/components/schemas/jsonApi:errorResponse"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "customer_data": {
+        "type": "object",
+        "properties": {
+          "din": {
+            "type": "string"
+          },
+          "custtype": {
+            "type": "integer"
+          },
+          "fullname": {
+            "type": "string"
+          },
+          "custname": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "custaddress": {
+            "type": "string"
+          },
+          "custrt": {
+            "type": "string"
+          },
+          "custrw": {
+            "type": "string"
+          },
+          "custkel": {
+            "type": "string"
+          },
+          "custkec": {
+            "type": "string"
+          },
+          "custcity": {
+            "type": "string"
+          },
+          "custprov": {
+            "type": "string"
+          },
+          "custzip": {
+            "type": "string"
+          },
+          "custdati": {
+            "type": "integer"
+          },
+          "idtype": {
+            "type": "integer"
+          },
+          "idnumber": {
+            "type": "string"
+          },
+          "idexpired": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "integer"
+          },
+          "maritalstatus": {
+            "type": "integer"
+          },
+          "birthdate": {
+            "type": "string"
+          },
+          "birthplace": {
+            "type": "string"
+          },
+          "birthdati": {
+            "type": "string"
+          },
+          "worksince": {
+            "type": "string"
+          },
+          "employeests": {
+            "type": "string"
+          },
+          "contractend": {
+            "type": "string"
+          },
+          "lasteducation": {
+            "type": "integer"
+          },
+          "economycode": {
+            "type": "integer"
+          },
+          "debiturcode": {
+            "type": "integer"
+          },
+          "mmn": {
+            "type": "string"
+          },
+          "npwp": {
+            "type": "string"
+          },
+          "homestatus": {
+            "type": "integer"
+          },
+          "livedsince": {
+            "type": "string"
+          },
+          "phonearea": {
+            "type": "string"
+          },
+          "phoneno": {
+            "type": "integer"
+          },
+          "mobileno": {
+            "type": "integer"
+          },
+          "dependent": {
+            "type": "integer"
+          },
+          "grossincome": {
+            "type": "integer"
+          },
+          "expenses": {
+            "type": "integer"
+          },
+          "sameidhomeaddr": {
+            "type": "integer"
+          },
+          "custaddresshome": {
+            "type": "string"
+          },
+          "custrthome": {
+            "type": "string"
+          },
+          "custrwhome": {
+            "type": "string"
+          },
+          "custkelhome": {
+            "type": "string"
+          },
+          "custkechome": {
+            "type": "string"
+          },
+          "custcityhome": {
+            "type": "string"
+          },
+          "custprovhome": {
+            "type": "string"
+          },
+          "custziphome": {
+            "type": "string"
+          },
+          "custdatihome": {
+            "type": "integer"
+          },
+          "spousename": {
+            "type": "string"
+          },
+          "spousebirthdate": {
+            "type": "string"
+          },
+          "spousebirthplace": {
+            "type": "string"
+          },
+          "spouseidtype": {
+            "type": "string"
+          },
+          "spouseidnumber": {
+            "type": "string"
+          },
+          "spousephoneno": {
+            "type": "string"
+          },
+          "spousemobileno": {
+            "type": "string"
+          },
+          "spouseoffice": {
+            "type": "string"
+          },
+          "spouseoffinephone": {
+            "type": "string"
+          },
+          "relativestype": {
+            "type": "string"
+          },
+          "relativesname": {
+            "type": "string"
+          },
+          "custaddressrel": {
+            "type": "string"
+          },
+          "custrtrel": {
+            "type": "string"
+          },
+          "custrwrel": {
+            "type": "string"
+          },
+          "custkelrel": {
+            "type": "string"
+          },
+          "custkecrel": {
+            "type": "string"
+          },
+          "custcityrel": {
+            "type": "string"
+          },
+          "custprovrel": {
+            "type": "string"
+          },
+          "custziprel": {
+            "type": "string"
+          },
+          "phonenorel": {
+            "type": "string"
+          },
+          "companyname": {
+            "type": "string"
+          },
+          "companyaddr": {
+            "type": "string"
+          },
+          "companycity": {
+            "type": "string"
+          },
+          "companyzip": {
+            "type": "string"
+          },
+          "companyphone": {
+            "type": "string"
+          },
+          "deedno": {
+            "type": "string"
+          },
+          "deeddate": {
+            "type": "string"
+          },
+          "corporatetype": {
+            "type": "string"
+          },
+          "jobid": {
+            "type": "integer"
+          },
+          "jobtitleid": {
+            "type": "integer"
+          },
+          "countryid": {
+            "type": "string"
+          },
+          "branchcode": {
+            "type": "string"
+          }
+        }
+      },
+      "loan_data": {
+        "type": "object",
+        "properties": {
+          "refno": {
+            "type": "string"
+          },
+          "objectvalue": {
+            "type": "string"
+          },
+          "principaltotal": {
+            "type": "string"
+          },
+          "tenor": {
+            "type": "integer"
+          },
+          "loantype": {
+            "type": "integer"
+          },
+          "effectiverate": {
+            "type": "string"
+          },
+          "installment": {
+            "type": "string"
+          },
+          "firstinstdate": {
+            "type": "string"
+          },
+          "admfee": {
+            "type": "string"
+          },
+          "inscode": {
+            "type": "string"
+          },
+          "inspremi": {
+            "type": "string"
+          },
+          "insonloan": {
+            "type": "string"
+          },
+          "installmenttype": {
+            "type": "integer"
+          },
+          "branchcode": {
+            "type": "integer"
+          },
+          "typeofuseid": {
+            "type": "integer"
+          },
+          "orientationofuseid": {
+            "type": "integer"
+          },
+          "debiturcatid": {
+            "type": "integer"
+          },
+          "portfoliocatid": {
+            "type": "string"
+          },
+          "credittypeid": {
+            "type": "integer"
+          },
+          "creditattributeid": {
+            "type": "integer"
+          },
+          "creditcategoryid": {
+            "type": "integer"
+          },
+          "fincat": {
+            "type": "integer"
+          },
+          "installfeeaccount": {
+            "type": "string"
+          }
+        }
+      },
+      "collateral_data": {
+        "type": "object",
+        "properties": {
+          "productcode": {
+            "type": "string"
+          },
+          "merkcode": {
+            "type": "string"
+          },
+          "modelcode": {
+            "type": "string"
+          },
+          "collateralno": {
+            "type": "string"
+          },
+          "collateraldate": {
+            "type": "string"
+          },
+          "collateraladdress": {
+            "type": "string"
+          },
+          "collateralcityid": {
+            "type": "integer"
+          },
+          "collateralname": {
+            "type": "string"
+          },
+          "collateralownerid": {
+            "type": "string"
+          },
+          "collateraldesctype": {
+            "type": "string"
+          },
+          "engineno": {
+            "type": "string"
+          },
+          "chassisno": {
+            "type": "string"
+          },
+          "collateralyear": {
+            "type": "integer"
+          },
+          "buildyear": {
+            "type": "integer"
+          },
+          "condition": {
+            "type": "integer"
+          },
+          "color": {
+            "type": "string"
+          },
+          "collateralkind": {
+            "type": "string"
+          },
+          "collateralpurpose": {
+            "type": "string"
+          },
+          "policeno": {
+            "type": "string"
+          },
+          "stnkexpired": {
+            "type": "string"
+          },
+          "surveydate": {
+            "type": "string"
+          },
+          "bindtypecode": {
+            "type": "string"
+          },
+          "collateraltypecode": {
+            "type": "integer"
+          },
+          "sbrankcode": {
+            "type": "string"
+          },
+          "collateralvalue": {
+            "type": "integer"
+          },
+          "dealercode": {
+            "type": "integer"
+          }
+        }
+      },
+      "installment_data": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string"
+          },
+          "duedate": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "string"
+          },
+          "interest": {
+            "type": "string"
+          },
+          "installfee": {
+            "type": "string"
+          }
+        }
+      },
+      "error_response": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "description": "Error Message",
+            "type": "string"
+          },
+          "error_code": {
+            "description": "Hydefi's error code XFEXXX",
+            "type": "string"
+          },
+          "error_handling": {
+            "description": "Instruction on how to handle error. Refer to Error Codes tag for more information.",
+            "type": "string"
+          }
+        }
+      },
+      "jsonApi:singleDataResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/jsonApi:data"
+          }
+        }
+      },
+      "jsonApi:data": {
+        "_comment": "https://jsonapi.org/format/#document-resource-objects",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Entity's unique identifier in Hydefi"
+          },
+          "type": {
+            "type": "string",
+            "description": "Entity's type"
+          },
+          "attributes": {
+            "type": "object",
+            "description": "Entity's attributes"
+          }
+        }
+      },
+      "jsonApi:errorResponse": {
+        "_comment": "https://jsonapi.org/format/#errors",
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Hydefi's error code XFEXXX"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Error description summary"
+                },
+                "detail": {
+                  "type": "string",
+                  "description": "Error details"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "X-Hydefi-APP-API-KEY": {
+        "type": "apiKey",
+        "name": "X-Hydefi-APP-API-KEY",
+        "in": "header",
+        "description": "You can retrieve this from your merchant's dashboard"
+      },
+      "X-Hydefi-USER-API-KEY": {
+        "type": "apiKey",
+        "name": "X-Hydefi-USER-API-KEY",
+        "in": "header",
+        "description": "You can retrieve this by using [get_token API](../sg/api/cutting-edge#operation/getToken)"
+      },
+      "user-api-token": {
+        "type": "apiKey",
+        "name": "X-Hydefi-USER-API-KEY",
+        "in": "query",
+        "description": "You can retrieve this by using [get_token API](../sg/api/cutting-edge#operation/getToken)"
+      },
+      "v4HydefiAuth": {
+        "name": "v4HydefiAuth",
+        "type": "http",
+        "scheme": "bearer",
+        "in": "header",
+        "bearerFormat": "Hydefi_api_token",
+        "description": "You can retrieve this from the dashboard. For instance: \n\n```\n\nAuthorization: Bearer <Hydefi_api_token>\n\n```\n\n"
+      }
+    }
+  }
+}
