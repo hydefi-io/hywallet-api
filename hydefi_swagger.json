@@ -12,16 +12,16 @@
   ],
   "info": {
     "description": "Welcome to Hydefi's API documentation. You can find information on our API endpoint.\n\n# Authentication\n\n<!-- ReDoc-Inject: <security-definitions> -->",
-    "version": "1",
+    "version": "1.0",
     "title": "Hydefi API",
     "contact": {
-      "name": "Contact us through our help desk",
-      "url": "https://hydefi.io/support"
+      "Name": "Contact us through our help desk",
+      "Contact": "hi@hydefi.io"
     }
   },
   "externalDocs": {
     "description": "Find out more about Hydefi",
-    "url": "https://www.hydefi.com"
+    "url": "https://hydefi.io"
   },
   "x-tagGroups": [
     {
@@ -108,7 +108,7 @@
     },
     {
       "name": "Callback Configuration",
-      "description": "For certain endpoints you might want to receive callbacks when the transaction becomes completed. You can configure them at the dashboard:\n\nSingapore: `https://www.Hydefi.io/merchant_settings/callback_settings`\n\nIndonesia: `https://id.Hydefi.com/merchant_settings/callback_settings`",
+      "description": "For certain endpoints you might want to receive callbacks when the transaction becomes completed. You can configure them at the dashboard:\n\nSingapore: `https://hydefi.io/merchant_settings/callback_settings`",
       "x-traitTag": true
     },
     {
@@ -281,7 +281,7 @@
           }
         ],
         "summary": "Submit KYC Data",
-        "description": "To provide KYC data in order to change user from unverified status into fully verified status.  \n\nThe image/document provided us must be hosted in a URL then pass the URL to Hydefi via this API.  \nMake sure data type for your image is jpeg / png.  \nMaximum size of the image/ document is 10 MB.  \n\nAfter this data is sent, we will do some verifications on our side and may take some time before user gets fully verified.  In Indonesia, fully verified user will be backed by a savings account.\r\nThus, there are required parameters which are mother_maiden_name, id_front_url, selfie_2id_url.\r\nAdditional data will speed up the KYC process.",
+        "description": "To provide KYC data in order to change user from unverified status into fully verified status.  \n\nThe image/document provided us must be hosted in a URL then pass the URL to Hydefi via this API.  \nMake sure data type for your image is jpeg / png.  \nMaximum size of the image/ document is 10 MB.  \n\nAfter this data is sent, we will do some verifications on our side and may take some time before user gets fully verified. ",
         "security": [
           {
             "X-Hydefi-USER-API-KEY": []
@@ -293,22 +293,7 @@
             "application/x-www-form-urlencoded": {
               "schema": {
                 "x-custom-params-requirements": {
-                  "Indonesia": [
-                    "id_front_url",
-                    "selfie_2id_url",
-                    "full_name",
-                    "identity_no",
-                    "gender",
-                    "mother_maiden_name",
-                    "date_of_birth",
-                    "place_of_birth",
-                    "marital_status",
-                    "occupation",
-                    "city",
-                    "state",
-                    "postal_code",
-                    "address_line_1"
-                  ]
+
                 },
                 "properties": {
                   "id_front_url": {
@@ -322,10 +307,6 @@
                   "fullname": {
                     "type": "string",
                     "description": "Account holder full name"
-                  },
-                  "mother_maiden_name": {
-                    "type": "string",
-                    "description": "Name of Mother"
                   },
                   "first_name": {
                     "type": "string",
@@ -365,7 +346,7 @@
                   },
                   "identity_no": {
                     "type": "string",
-                    "description": "Account holder national identity number or, KTP number of Indonesian."
+                    "description": "Account holder national identity number "
                   },
                   "nric_type": {
                     "type": "string",
@@ -430,18 +411,6 @@
                     "type": "string",
                     "description": "Addtional data like Jumio info dump."
                   },
-                  "place_of_birth": {
-                    "type": "string",
-                    "description": "Account holder’s birth place."
-                  },
-                  "blood_type": {
-                    "type": "string",
-                    "description": " Account holder’s blood type, without rhesus. Possible values: ‘A’, ‘B’, 'AB’, or 'O’"
-                  },
-                  "marital_status": {
-                    "type": "string",
-                    "description": "Only Indonesia. Account holder’s marital status according to his/her KTP. Possible Values: 'Belum Kawin’, 'Kawin’, 'Janda’, or 'Duda’"
-                  }
                 }
               }
             }
@@ -462,9 +431,9 @@
                   "date_of_birth": "1986-02-27",
                   "country_of_birth": "",
                   "gender": "male",
-                  "email": "winston@Hydefi.com",
+                  "email": "test@hydefi.io",
                   "country": "id",
-                  "nationality": "Indonesian",
+                  "nationality": "Singapore",
                   "address_line_1": "Blk 712 loyang Avenue 5",
                   "address_line_2": "#01-41",
                   "postal_code": "340712",
@@ -574,7 +543,7 @@
                   "date_of_birth": "1990-11-09",
                   "country_of_birth": "SG",
                   "gender": "male",
-                  "email": "docs@Hydefi.com",
+                  "email": "docs@Hydefi.io",
                   "country": "sg",
                   "state": "Singapore",
                   "city": "Singapore",
@@ -1066,9 +1035,6 @@
                   "currency"
                 ],
                 "x-custom-params-requirements": {
-                  "Indonesia": [
-                    "user_api_token"
-                  ],
                   "Singapore": [
                     "currency"
                   ]
@@ -1106,7 +1072,7 @@
                   "wallet_name": "General Wallet",
                   "order_id": "Order_docs_12345",
                   "description": "Testing for Documentation",
-                  "receipt_email": "winston@Hydefi.com",
+                  "receipt_email": "hi@Hydefi.io",
                   "metadata": {
                     "callback_url": "https://www.example.com/updates",
                     "merchant_metadata": "test metadata"
@@ -1412,7 +1378,7 @@
                     "wallet_name": "General Wallet",
                     "order_id": "Order_docs_12345",
                     "description": "Testing for Documentation",
-                    "receipt_email": "winston@Hydefi.com",
+                    "receipt_email": "hy@hydefi.io",
                     "metadata": {
                       "callback_url": "https://www.example.com/updates",
                       "merchant_metadata": "test metadata"
@@ -1481,7 +1447,7 @@
                     "wallet_name": "General Wallet",
                     "order_id": "Order_docs_12345",
                     "description": "Testing for Documentation",
-                    "receipt_email": "winston@Hydefi.com",
+                    "receipt_email": "test@Hydefi.io",
                     "metadata": {
                       "callback_url": "https://www.example.com/updates",
                       "merchant_metadata": "test metadata"
@@ -1523,7 +1489,7 @@
             "application/json": {
               "schema": {
                 "x-custom-params-requirements": {
-                  "Indonesia": [
+                  "Singapore": [
                     "user_api_token"
                   ]
                 },
@@ -1598,7 +1564,7 @@
               "application/json": {
                 "example": {
                   "id": "contract_9b562994c4274d9993ba93c94619a8f6",
-                  "recipient": "winston@Hydefi.com",
+                  "recipient": "test@hydefi.io",
                   "metadata": {
                     "merchant_metadata": ""
                   },
@@ -1725,7 +1691,7 @@
               "application/json": {
                 "example": {
                   "id": "contract_9b562994c4274d9993ba93c94619a8f6",
-                  "recipient": "winston@Hydefi.com",
+                  "recipient": "hi@hydefi.io",
                   "metadata": {
                     "merchant_metadata": ""
                   },
@@ -1766,7 +1732,7 @@
           "Bank Account"
         ],
         "summary": "Add Bank Account",
-        "description": "This API will be used to attach a new bank account to a user.\nYou will be able to withdraw user's balance to this bank account.\nIn Indonesia Production, This API will return the detected_name as provided from the bank.\nThe account_holder_name you provided and detected_name needs to be similar (doesn't need to be 100% match).",
+        "description": "This API will be used to attach a new bank account to a user.\nYou will be able to withdraw user's balance to this bank account..\nThe account_holder_name you provided and detected_name needs to be similar (doesn't need to be 100% match).",
         "security": [
           {
             "X-Hydefi-USER-API-KEY": []
@@ -1778,7 +1744,7 @@
             "application/json": {
               "schema": {
                 "x-custom-requirements": {
-                  "Indonesia": [
+                  "Singapore": [
                     "account_holder_name"
                   ]
                 },
@@ -1797,7 +1763,7 @@
                   },
                   "account_holder_name": {
                     "type": "string",
-                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Indo Sandbox"
+                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Singapore Sandbox"
                   },
                   "bank_account_proof": {
                     "type": "object",
@@ -1937,7 +1903,7 @@
             "application/json": {
               "schema": {
                 "x-custom-requirements": {
-                  "Indonesia": [
+                  "Singapore": [
                     "account_holder_name"
                   ]
                 },
@@ -1956,7 +1922,7 @@
                   },
                   "account_holder_name": {
                     "type": "string",
-                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Indo Sandbox"
+                    "description": "Name of bank account holder name. Put 'PROD_ONLY' in Singapore Sandbox"
                   },
                   "bank_account_proof": {
                     "type": "object",
@@ -2080,7 +2046,7 @@
           "Withdraw"
         ],
         "summary": "Create Withdrawal",
-        "description": "Withdrawal Time varies upon country. \r\nFor Indonesia, withdrawal time is instantaneous.\r\nFor Singapore, withdrawal time depends on whether it is an express withdrawal.\r\n\r\n#### Withdrawal on Behalf\r\nIf you wish to withdraw to a bank account that does not belong to you, add in user_api_token in the params.\r\n\r\nBehind the scenes, Hydefi does a payout of funds from your Hydefi account to that user’s Hydefi account, followed by a withdrawal. This is required for compliance purposes as we cannot directly withdraw funds to a bank account that does not belong to you.\r\n\r\nTo clarify this:\r\n\r\nPlacing of Hydefi_api_token | Flow | Remark\r\n--------------- |  ----------- | -----\r\nmerchant's token in header, user's token in body| merchant's Hydefi account -> user's Hydefi account -> user's bank Account | We call this `Withdrawal on Behalf`\r\nuser's token in header, nothing in body| user's Hydefi account -> user's bank Account | This is the standard Withdrawal usage\r\nmerchant's token in header, nothing in body| merchant's Hydefi account -> merchant's bank Account | This is usually done via Hydefi Dashboard\r\n",
+        "description": "Withdrawal Time varies upon country. \r\nFor Singapore, withdrawal time depends on whether it is an express withdrawal.\r\n\r\n#### Withdrawal on Behalf\r\nIf you wish to withdraw to a bank account that does not belong to you, add in user_api_token in the params.\r\n\r\nBehind the scenes, Hydefi does a payout of funds from your Hydefi account to that user’s Hydefi account, followed by a withdrawal. This is required for compliance purposes as we cannot directly withdraw funds to a bank account that does not belong to you.\r\n\r\nTo clarify this:\r\n\r\nPlacing of Hydefi_api_token | Flow | Remark\r\n--------------- |  ----------- | -----\r\nmerchant's token in header, user's token in body| merchant's Hydefi account -> user's Hydefi account -> user's bank Account | We call this `Withdrawal on Behalf`\r\nuser's token in header, nothing in body| user's Hydefi account -> user's bank Account | This is the standard Withdrawal usage\r\nmerchant's token in header, nothing in body| merchant's Hydefi account -> merchant's bank Account | This is usually done via Hydefi Dashboard\r\n",
         "security": [
           {
             "X-Hydefi-USER-API-KEY": []
@@ -2115,7 +2081,7 @@
                   },
                   "idempotency_id": {
                     "type": "string",
-                    "description": "Unique ref no provided by you to prevent double transaction, this cannot be repeated, Currently only activated for Indonesia"
+                    "description": "Unique ref no provided by you to prevent double transaction, this cannot be repeated"
                   },
                   "express": {
                     "type": "boolean",
@@ -2669,7 +2635,7 @@
           }
         ],
         "summary": "Mock Withdrawal Result",
-        "description": "You need to wait for a few seconds after withdrawal creation to run this API. Currently only available in Indonesia",
+        "description": "You need to wait for a few seconds after withdrawal creation to run this API. ",
         "x-code-samples": [
           {
             "lang": "Shell",
@@ -2932,7 +2898,7 @@
                   "unique_amount": "29999",
                   "bank_abbrev": "MANDIRI",
                   "bank_name": "Bank Mandiri",
-                  "account_name": "PT Media Indonusa",
+                  "account_name": "PT Media Singaore",
                   "bank_account_no": "8855845678901235",
                   "notify_url": "https://mysite.com/topup_notification",
                   "expiration_date": "2017-06-01T07:46:40Z",
@@ -3012,7 +2978,7 @@
                   "unique_amount": "29999",
                   "bank_abbrev": "MANDIRI",
                   "bank_name": "Bank Mandiri",
-                  "account_name": "PT Media Indonusa",
+                  "account_name": "PT Media Singapore",
                   "bank_account_no": "8855845678901235",
                   "notify_url": "https://mysite.com/topup_notification",
                   "expiration_date": "2017-06-01T07:46:40Z",
@@ -3093,7 +3059,7 @@
                   "amount_to_transfer": "4999",
                   "bank_name": "Bank Central Asia",
                   "bank_abbrev": "BCA",
-                  "account_name": "Xveria Media Indonesia",
+                  "account_name": "Xveria Media Singapore",
                   "bank_account_no": "0124121241",
                   "notify_url": "https://mysite.com/topup_notification",
                   "expiration_date": "2016-09-09T17:55:51Z",
