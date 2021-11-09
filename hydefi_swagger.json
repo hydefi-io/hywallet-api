@@ -3133,9 +3133,9 @@
         }
       }
     },
-    "/v4/accounts": {
+    "/v2/accounts": {
       "get": {
-        "operationId": "getApiV4AccountsId",
+        "operationId": "getApiV2AccountsId",
         "summary": "Get Account Info (Coming Soon)",
         "description": "This API displays the account information, including the storage limits.",
         "tags": [
@@ -3144,12 +3144,12 @@
         "x-code-samples": [
           {
             "lang": "Shell",
-            "source": "curl --location --request GET \"$BASE_URL/v4/accounts\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
+            "source": "curl --location --request GET \"$BASE_URL/v2/accounts\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
           }
         ],
         "security": [
           {
-            "v4HydefiAuth": []
+            "v2HydefiAuth": []
           }
         ],
         "parameters": [
@@ -3226,13 +3226,13 @@
         }
       }
     },
-    "/v4/direct_bank_transfer_payments": {
+    "/v2/direct_bank_transfer_payments": {
       "post": {
         "operationId": "createDirectBankTransferPayment",
         "x-code-samples": [
           {
             "lang": "Shell",
-            "source": "curl --location --request POST \"$BASE_URL/v4/direct_bank_transfer_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\" \\\r\n  --form \"amount=100\" \\\r\n  --form \"external_id=ref_20200101_0001\" \\\r\n  --form \"source_bank_account_id=12345\""
+            "source": "curl --location --request POST \"$BASE_URL/v2/direct_bank_transfer_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\" \\\r\n  --form \"amount=100\" \\\r\n  --form \"external_id=ref_20200101_0001\" \\\r\n  --form \"source_bank_account_id=12345\""
           }
         ],
         "tags": [
@@ -3242,7 +3242,7 @@
         "description": "The following API will allow you to make a Direct Bank Transfer Payment. Using Direct Bank Transfer has the advantage of having higher transaction limits as compared to normal Charge which uses your wallet balance (`/charges`). The API token used in Authorization header should be your customer's API token.\n\n In the response, you will have information about the bank account to top up to. Show this information to your customer for them to make a bank transfer. They need to put the `unique_topup_identifier` in the comments field when doing a bank transfer for Hydefi to identify that their transfer is for this transaction.",
         "security": [
           {
-            "v4HydefiAuth": []
+            "v2HydefiAuth": []
           }
         ],
         "parameters": [
@@ -3306,7 +3306,7 @@
             }
           },
           "4XX": {
-            "$ref": "#/components/responses/v4Error:4XX"
+            "$ref": "#/components/responses/v2Error:4XX"
           }
         }
       },
@@ -3315,7 +3315,7 @@
         "x-code-samples": [
           {
             "lang": "Shell",
-            "source": "curl --location --request GET \"$BASE_URL/v4/inter_wallet_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
+            "source": "curl --location --request GET \"$BASE_URL/v2/inter_wallet_payments\" \\\r\n  --header \"Content-Type: application/vnd.api+json\" \\\r\n  --header \"Authorization: Bearer $CUSTOMER_API_KEY\""
           }
         ],
         "tags": [
@@ -3325,7 +3325,7 @@
         "description": "Retrive a previously created direct bank transfer payment. You can use this to check the status, whether it has been completed or still processing. The API token used in Authorization header should be your customer's API token.",
         "security": [
           {
-            "v4HydefiAuth": []
+            "v2HydefiAuth": []
           }
         ],
         "responses": {
@@ -3363,7 +3363,7 @@
             }
           },
           "4XX": {
-            "$ref": "#/components/responses/v4Error:4XX"
+            "$ref": "#/components/responses/v2Error:4XX"
           }
         }
       }
@@ -4291,7 +4291,7 @@
           }
         }
       },
-      "v4Error:4XX": {
+      "v2Error:4XX": {
         "content": {
           "application/vnd.api+json": {
             "schema": {
@@ -4813,8 +4813,8 @@
         "in": "query",
         "description": "You can retrieve this by using [get_token API](../sg/api/cutting-edge#operation/getToken)"
       },
-      "v4HydefiAuth": {
-        "name": "v4HydefiAuth",
+      "v2HydefiAuth": {
+        "name": "v2HydefiAuth",
         "type": "http",
         "scheme": "bearer",
         "in": "header",
